@@ -1,0 +1,155 @@
+... existing code ...
+            <div class="space-y-3 text-justify">
+              <p>
+                Pada hari ini, tanggal <strong>${ba.tanggal_ba}</strong>, bertempat di Kantor Desa Wuliwutik, Kecamatan Nita, Kabupaten Sikka, kami selaku Tim Inventarisasi Aset Desa / Pengurus Barang Milik Desa yang dibentuk berdasarkan Keputusan Kepala Desa Wuliwutik telah menyelesaikan kegiatan pendataan, pencatatan, kodefikasi (Kode Wilayah <span class="font-mono font-bold">53.07.04.2006</span>), dan penilaian hasil inventarisasi aset milik Desa Wuliwutik.
+              </p>
+              <p><strong>Ringkasan Hasil Inventarisasi:</strong> ${ba.ringkasan_temuan}</p>
+              <p>
+                <strong>Pernyataan Tanggung Jawab Kebenaran:</strong> Tim Inventarisasi Aset Desa dan Pengurus Barang Milik Desa bertanggung jawab penuh atas kebenaran materiil dari data yang tertuang dalam Buku Inventaris Aset Desa Wuliwutik dengan jumlah tercatat sebanyak <strong>${appState.assets.length} item</strong> dan total nilai sebesar <strong>${formatRupiah(appState.assets.reduce((s, a) => s + (Number(a.nilai_perolehan) || 0), 0))}</strong>.
+              </p>
+              <p><strong>Tindak Lanjut Inventarisasi:</strong> ${ba.tindak_lanjut_catatan}</p>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'kekayaan') {
+... existing code ...
+    function handleLocalPhotoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64Data = e.target.result;
+        appState.tempUploadedPhotoBase64 = base64Data;
+        const previewBox = document.getElementById('form-photo-preview');
+        previewBox.innerHTML = `<img src="${base64Data}" alt="Upload Lokal" class="w-full h-full object-cover" />`;
+
+        const gasUrl = appState.settings.gas_webapp_url;
+        if (gasUrl) {
+          showToast('Mengunggah foto ke Google Drive Desa Wuliwutik...', 'success');
+          try {
+            const namaAset = document.getElementById('inp-nama').value.trim() || 'aset_wuliwutik';
+            const res = await fetch(gasUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+              body: JSON.stringify({
+                action: 'UPLOAD_PHOTO',
+                folderUrl: appState.settings.folder_gdrive_foto_url || '',
+                fileName: `${namaAset}_${Date.now()}`,
+                mimeType: file.type || 'image/jpeg',
+                base64Data: base64Data
+              })
+            });
+            const data = await res.json();
+            if (data.status === 'ok' && data.url) {
+              document.getElementById('inp-foto-url').value = data.url;
+              document.getElementById('detected-drive-id').textContent = data.fileId || '-';
+              showToast('Foto berhasil diunggah ke Google Drive & tautan terisi otomatis!');
+              return;
+            }
+          } catch (err) {
+            console.error('Gagal upload ke Google Drive:', err);
+            showToast('Gagal upload ke Drive; foto disimpan sementara di pratinjau lokal.', 'warning');
+            return;
+          }
+        }
+
+        showToast('Foto lokal dimuat ke pratinjau (akan ikut tersimpan).', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    let pendingSubmitMode = 'list';
+    function submitFormWithMode(mode) {
+      pendingSubmitMode = mode;
+      const form = document.getElementById('asset-form');
+      if (form.reportValidity()) {
+        handleSaveAsset(new Event('submit'), mode);
+      }
+    }
+
+    function handleSaveAsset(e, mode = pendingSubmitMode) {
+      e.preventDefault();
+      const editId = document.getElementById('edit-asset-id').value;
+      const gol = document.getElementById('inp-golongan').value;
+      const meta = GOLONGAN_META[gol];
+      const [kodePengguna, namaPengguna] = document.getElementById('inp-pengguna').value.split('|');
+      const gdriveUrl = document.getElementById('inp-foto-url').value.trim();
+      const gdriveFileId = extractGoogleDriveId(gdriveUrl);
+
+      const assetObj = {
+        id_aset: editId || 'AST-WWT-' + String(Date.now()).slice(-6),
+        golongan: gol,
+        kode_barang: document.getElementById('inp-kode-barang').value.trim(),
+        kode_lokasi: appState.settings.kode_lokasi_10_digit || '53.07.04.2006',
+        kode_pengguna: kodePengguna,
+        nama_pengguna_barang: namaPengguna,
+        tahun_perolehan: document.getElementById('inp-tahun').value.trim(),
+        no_urut_pendaftaran: String(document.getElementById('inp-nourut').value || '1').padStart(6, '0'),
+        kelompok_juknis: meta.nama,
+        sub_jenis_aset: document.getElementById('inp-subjenis').value,
+        kategori_kib: meta.kib,
+        nama_aset: document.getElementById('inp-nama').value.trim(),
+        merk_tipe_spesifikasi: document.getElementById('inp-spesifikasi').value.trim(),
+        jumlah_luas_volume: Number(document.getElementById('inp-jumlah').value) || 1,
+        satuan: document.getElementById('inp-satuan').value.trim(),
+        asal_usul: document.getElementById('inp-asal').value,
+        tanggal_perolehan: document.getElementById('inp-tanggal').value,
+        nilai_perolehan: Number(document.getElementById('inp-nilai').value) || 0,
+        metode_penilaian: document.getElementById('inp-metode-nilai').value,
+        kondisi: document.getElementById('inp-kondisi').value,
+        lokasi_fisik_ruangan: document.getElementById('inp-lokasi-fisik').value.trim(),
+        penanggung_jawab: document.getElementById('inp-pj').value.trim(),
+        status_dokumen: document.getElementById('inp-status-dokumen').value,
+        no_dokumen_ba: document.getElementById('inp-nodokumen').value.trim(),
+        catatan_klarifikasi_calk: document.getElementById('inp-catatan').value.trim(),
+        status_label: document.getElementById('inp-status-label').value,
+        foto_gdrive_url: gdriveUrl,
+        foto_gdrive_file_id: gdriveFileId,
+        foto_thumbnail_url: appState.tempUploadedPhotoBase64 || (editId ? (appState.assets.find(x => x.id_aset === editId)?.foto_thumbnail_url || '') : ''),
+        tanggal_update: new Date().toISOString().slice(0, 10)
+      };
+
+      if (editId) {
+        const idx = appState.assets.findIndex(a => a.id_aset === editId);
+        if (idx !== -1) appState.assets[idx] = assetObj;
+        showToast(`Data aset "${assetObj.nama_aset}" berhasil diperbarui!`);
+      } else {
+        appState.assets.unshift(assetObj);
+        showToast(`Aset baru "${assetObj.nama_aset}" berhasil dicatat!`);
+      }
+
+      saveStateToStorage();
+      if (appState.settings.gas_webapp_url) {
+        syncWithGoogleSheets();
+      }
+      pendingSubmitMode = 'list';
+... existing code ...
+      appState.assets = appState.assets.filter(a => !appState.selectedForDeletion.has(a.id_aset));
+      appState.selectedForDeletion.clear();
+      document.getElementById('del-nosk').value = '';
+      document.getElementById('del-alasan').value = '';
+
+      saveStateToStorage();
+      if (appState.settings.gas_webapp_url) {
+        syncWithGoogleSheets();
+      }
+      closeModal('delete-confirm-modal');
+      renderDeletionCandidates();
+      renderDeletionHistory();
+      showToast(`${selectedAssets.length} aset berhasil dihapus & dicatat ke Riwayat Penghapusan.`);
+    }
+... existing code ...
+    function saveBaLogChanges() {
+      if (!appState.baLogs[0]) appState.baLogs[0] = { ...SEED_BA_LOGS[0] };
+      appState.baLogs[0].nomor_ba = document.getElementById('ba-edit-noba').value;
+      appState.baLogs[0].nomor_sptjm = document.getElementById('ba-edit-nosptjm').value;
+      appState.baLogs[0].ringkasan_temuan = document.getElementById('ba-edit-ringkasan').value;
+      appState.baLogs[0].tindak_lanjut_catatan = document.getElementById('ba-edit-tindak').value;
+      saveStateToStorage();
+      if (appState.settings.gas_webapp_url) {
+        syncWithGoogleSheets();
+      }
+      renderActiveReportTab();
+      showToast('Narasi Berita Acara & SPTJM berhasil disimpan!');
+    }
+... existing code ...
