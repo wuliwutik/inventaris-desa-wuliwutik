@@ -1,155 +1,3010 @@
-... existing code ...
-            <div class="space-y-3 text-justify">
-              <p>
-                Pada hari ini, tanggal <strong>${ba.tanggal_ba}</strong>, bertempat di Kantor Desa Wuliwutik, Kecamatan Nita, Kabupaten Sikka, kami selaku Tim Inventarisasi Aset Desa / Pengurus Barang Milik Desa yang dibentuk berdasarkan Keputusan Kepala Desa Wuliwutik telah menyelesaikan kegiatan pendataan, pencatatan, kodefikasi (Kode Wilayah <span class="font-mono font-bold">53.07.04.2006</span>), dan penilaian hasil inventarisasi aset milik Desa Wuliwutik.
-              </p>
-              <p><strong>Ringkasan Hasil Inventarisasi:</strong> ${ba.ringkasan_temuan}</p>
-              <p>
-                <strong>Pernyataan Tanggung Jawab Kebenaran:</strong> Tim Inventarisasi Aset Desa dan Pengurus Barang Milik Desa bertanggung jawab penuh atas kebenaran materiil dari data yang tertuang dalam Buku Inventaris Aset Desa Wuliwutik dengan jumlah tercatat sebanyak <strong>${appState.assets.length} item</strong> dan total nilai sebesar <strong>${formatRupiah(appState.assets.reduce((s, a) => s + (Number(a.nilai_perolehan) || 0), 0))}</strong>.
-              </p>
-              <p><strong>Tindak Lanjut Inventarisasi:</strong> ${ba.tindak_lanjut_catatan}</p>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistem Inventarisasi Aset Desa Wuliwutik — Kecamatan Nita</title>
+  <style>
+    :root {
+      --bg-app: #f4f3ff;
+      --bg-surface: #ffffff;
+      --bg-soft: #f8f7ff;
+      --text-main: #1e1b4b;
+      --text-muted: #64748b;
+      --border-light: #e2e8f0;
+      --primary: #6d28d9;
+      --primary-dark: #4c1d95;
+      --primary-mid: #7c3aed;
+      --primary-soft: #ede9fe;
+      --success: #059669;
+      --success-soft: #d1fae5;
+      --warning: #d97706;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --info: #0284c7;
+      --info-soft: #e0f2fe;
+      --shadow-sm: 0 2px 10px rgba(76, 29, 149, 0.05);
+      --shadow-md: 0 10px 25px rgba(76, 29, 149, 0.08);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-app);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 78px;
+      background: #ffffff;
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 10px;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 30;
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #5b21b6, #8b5cf6);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(109, 40, 217, 0.28);
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+
+    .nav-btn {
+      width: 56px;
+      min-height: 50px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #64748b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+      transition: all 0.18s ease;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .nav-btn span.icon {
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg-soft);
+      color: var(--primary);
+    }
+
+    .nav-btn.active {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border-color: #ddd6fe;
+    }
+
+    .nav-btn.danger-nav:hover {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .nav-btn.danger-nav.active {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* Main Content */
+    .main-area {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 240px;
+      max-width: 470px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 13.5px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .code-badge {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border: 1px solid #ddd6fe;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .conn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .conn-pill.demo {
+      background: var(--warning-soft);
+      color: #92400e;
+      border-color: #fde68a;
+    }
+
+    .conn-pill.live {
+      background: var(--success-soft);
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 4px 10px 4px 5px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid var(--border-light);
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6d28d9, #a855f7);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+
+    .user-meta {
+      line-height: 1.15;
+    }
+
+    .user-meta strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .user-meta small {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    .content-container {
+      padding: 22px 24px 44px;
+      max-width: 1420px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 15px;
+      border-radius: 11px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6d28d9, #7c3aed);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(109, 40, 217, 0.24);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5b21b6, #6d28d9);
+    }
+
+    .btn-light {
+      background: #ffffff;
+      color: var(--text-main);
+      border-color: #cbd5e1;
+    }
+
+    .btn-light:hover {
+      background: #f8fafc;
+    }
+
+    .btn-soft-purple {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border-color: #ddd6fe;
+    }
+
+    .btn-soft-purple:hover {
+      background: #ddd6fe;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn-soft-danger {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+
+    .btn-soft-danger:hover {
+      background: #fecaca;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+
+    /* Hero + KPI Layout */
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .hero-card {
+      background: linear-gradient(130deg, #4c1d95 0%, #6d28d9 52%, #7e22ce 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-bottom: 10px;
+    }
+
+    .hero-card h1 {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.28;
+      margin-bottom: 8px;
+    }
+
+    .hero-card p {
+      font-size: 13.5px;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 620px;
+    }
+
+    .hero-total-box {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      display: inline-block;
+    }
+
+    .hero-total-box small {
+      display: block;
+      font-size: 11.5px;
+      opacity: 0.88;
+    }
+
+    .hero-total-box strong {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .kpi-badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .kpi-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Section Header */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 22px 0 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .section-head p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    /* Category Cards */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .cat-card {
+      border-radius: 16px;
+      padding: 16px;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 156px;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .cat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      opacity: 0.95;
+    }
+
+    .cat-pill {
+      background: rgba(255, 255, 255, 0.22);
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .cat-title {
+      font-size: 15.5px;
+      font-weight: 800;
+      margin-top: 8px;
+    }
+
+    .cat-desc {
+      font-size: 11.5px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .cat-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.22);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Cards & Charts */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .card-header h3 {
+      font-size: 15.5px;
+      font-weight: 800;
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 10px;
+      gap: 2px;
+    }
+
+    .segmented button {
+      border: none;
+      background: transparent;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .segmented button.active {
+      background: #ffffff;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Tables */
+    .filter-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .form-control,
+    select.form-control,
+    textarea.form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--text-main);
+      background: #ffffff;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.8px;
+      background: #ffffff;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      text-align: left;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border-light);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+    }
+
+    tr:hover td {
+      background: #faf9ff;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .st-baik { background: var(--success-soft); color: #065f46; }
+    .st-ringan { background: var(--warning-soft); color: #92400e; }
+    .st-berat { background: var(--danger-soft); color: #991b1b; }
+    .st-info { background: var(--info-soft); color: #075985; }
+    .st-purple { background: var(--primary-soft); color: var(--primary-dark); }
+
+    .reg-stacked {
+      font-family: "Courier New", monospace;
+      font-size: 11px;
+      line-height: 1.35;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 5px 7px;
+      display: inline-block;
+    }
+
+    .reg-top {
+      border-bottom: 1px dashed #94a3b8;
+      padding-bottom: 2px;
+      margin-bottom: 2px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .reg-bot {
+      font-weight: 700;
+      color: #4c1d95;
+    }
+
+    /* Form Grid */
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .form-group small {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .photo-preview-box {
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 12px;
+      background: #f8fafc;
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .photo-preview-box img {
+      max-height: 190px;
+      max-width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .thumb-mini {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Tabs inside Laporan */
+    .subtabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .subtab-btn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .subtab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* Official Report Layout */
+    .report-paper {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 26px;
+    }
+
+    .kop-surat {
+      text-align: center;
+      border-bottom: 3px double #1e293b;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .kop-surat h4 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .kop-surat h3 {
+      font-size: 17px;
+      text-transform: uppercase;
+      margin: 2px 0;
+    }
+
+    .kop-surat p {
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .ttd-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px 36px;
+      margin-top: 26px;
+      font-size: 12.5px;
+    }
+
+    .ttd-box {
+      text-align: center;
+    }
+
+    .ttd-space {
+      height: 64px;
+    }
+
+    /* Modal & Toast */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.52);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 18px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 22px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #1e1b4b;
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
+      z-index: 200;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.22s ease;
+      pointer-events: none;
+      max-width: 380px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    pre.code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      overflow-x: auto;
+      max-height: 420px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1080px) {
+      .top-grid,
+      .panel-grid {
+        grid-template-columns: 1fr;
+      }
+      .cat-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .filter-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .sidebar {
+        width: 62px;
+        padding: 12px 6px;
+      }
+      .nav-btn {
+        width: 50px;
+        font-size: 9px;
+      }
+      .content-container {
+        padding: 14px;
+      }
+      .cat-grid,
+      .kpi-grid,
+      .form-grid-2,
+      .form-grid-3,
+      .ttd-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      .sidebar,
+      .topbar,
+      .no-print,
+      .subtabs,
+      .btn {
+        display: none !important;
+      }
+      body,
+      .content-container,
+      .card,
+      .report-paper {
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar no-print">
+      <div class="brand-mark" title="Desa Wuliwutik • 53.07.04.2006" onclick="switchView('dashboard')">WWT</div>
+
+      <button class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">
+        <span class="icon">🏠</span>
+        <span>Ringkasan</span>
+      </button>
+
+      <button class="nav-btn" data-view="inventory" onclick="switchView('inventory')">
+        <span class="icon">📦</span>
+        <span>Daftar Aset</span>
+      </button>
+
+      <button class="nav-btn" data-view="input" onclick="openInputView()">
+        <span class="icon">➕</span>
+        <span>Input Aset</span>
+      </button>
+
+      <button class="nav-btn danger-nav" data-view="deletion" onclick="switchView('deletion')">
+        <span class="icon">🗑️</span>
+        <span>Hapus Aset</span>
+      </button>
+
+      <button class="nav-btn" data-view="reports" onclick="switchView('reports')">
+        <span class="icon">📄</span>
+        <span>Laporan</span>
+      </button>
+
+      <div class="sidebar-bottom">
+        <button class="nav-btn" data-view="settings" onclick="switchView('settings')">
+          <span class="icon">⚙️</span>
+          <span>Juknis & Sheet</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Area -->
+    <div class="main-area">
+      <!-- Topbar -->
+      <header class="topbar no-print">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="global-search"
+            placeholder="Cari kode barang, kode register, nama aset, KIB, atau lokasi..."
+            oninput="handleGlobalSearch(this.value)"
+          />
+        </div>
+
+        <div class="topbar-right">
+          <span class="code-badge" id="topbar-kode-lokasi">Kode Desa: 53.07.04.2006</span>
+          <span class="conn-pill demo" id="conn-status-badge">● Mode Pratinjau Lokal</span>
+          <button class="btn btn-soft-purple btn-sm" onclick="syncFromGoogleSheets()">🔄 Sinkronkan</button>
+          <div class="user-chip">
+            <div class="user-avatar">PW</div>
+            <div class="user-meta">
+              <strong id="topbar-pengurus-nama">Pengurus Aset Desa</strong>
+              <small>Desa Wuliwutik, Kec. Nita</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dynamic Content -->
+      <main class="content-container" id="app-content"></main>
+    </div>
+  </div>
+
+  <!-- Modal Detail & Label Aset -->
+  <div class="modal-backdrop no-print" id="detail-modal" onclick="closeModalOnBackdrop(event, 'detail-modal')">
+    <div class="modal-card" id="detail-modal-body"></div>
+  </div>
+
+  <!-- Modal Konfirmasi Hapus -->
+  <div class="modal-backdrop no-print" id="delete-modal" onclick="closeModalOnBackdrop(event, 'delete-modal')">
+    <div class="modal-card" id="delete-modal-body"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast no-print" id="toast-box"></div>
+
+  <script>
+    const STORAGE_KEY = "WULIWTIK_INVENTARIS_V1_5307042006";
+
+    const GOLONGAN_META = {
+      "1": { name: "Persediaan", kib: "Persediaan", color: "linear-gradient(135deg,#0f766e,#14b8a6)", desc: "Pakai Habis, Tak Habis, Bekas Pakai", presetCode: "1.01.01.01.001" },
+      "2": { name: "Tanah", kib: "KIB A", color: "linear-gradient(135deg,#4f46e5,#7c3aed)", desc: "Tanah Kas, Gedung, Pertanian, Jalan", presetCode: "2.01.01.01.001" },
+      "3": { name: "Peralatan dan Mesin", kib: "KIB B", color: "linear-gradient(135deg,#7e22ce,#a855f7)", desc: "Kendaraan, Komputer, Meubel, Alat", presetCode: "3.02.01.04.001" },
+      "4": { name: "Gedung dan Bangunan", kib: "KIB C", color: "linear-gradient(135deg,#059669,#10b981)", desc: "Bangunan Gedung & Monumen", presetCode: "4.01.01.01.001" },
+      "5": { name: "Jalan, Irigasi, dan Jaringan", kib: "KIB D", color: "linear-gradient(135deg,#0284c7,#38bdf8)", desc: "Jalan, Jembatan, Air, Instalasi, Jaringan", presetCode: "5.01.01.01.001" },
+      "6": { name: "Aset Tetap Lainnya", kib: "KIB E", color: "linear-gradient(135deg,#d97706,#f59e0b)", desc: "Perpustakaan, Seni/Budaya, Hewan, Tanaman", presetCode: "6.01.01.01.001" },
+      "7": { name: "Konstruksi dalam Pengerjaan", kib: "KIB F", color: "linear-gradient(135deg,#e11d48,#f43f5e)", desc: "Proyek Konstruksi Berjalan", presetCode: "7.01.01.01.001" },
+      "8": { name: "Aset Tak Berwujud", kib: "Aset Tak Berwujud", color: "linear-gradient(135deg,#334155,#64748b)", desc: "Hak Cipta dan Paten", presetCode: "8.01.01.01.001" }
+    };
+
+    const SUB_JENIS_BY_GOLONGAN = {
+      "1": ["Barang Pakai Habis", "Barang Tak Habis Pakai", "Barang Bekas Pakai"],
+      "2": [
+        "Tanah Kas Desa", "Tanah Perkampungan", "Tanah Pertanian", "Tanah Perkebunan",
+        "Tanah Hutan", "Tanah Kebun Campuran", "Tanah Kolam Ikan", "Tanah Danau/Rawa",
+        "Tanah Tandus/Rusak", "Tanah Alang-alang dan Padang Rumput", "Tanah Pertambangan",
+        "Tanah untuk Bangunan Gedung", "Tanah untuk Bangunan Bukan Gedung",
+        "Tanah Penggunaan Lainnya", "Tanah Badan Jalan dan lain-lain sejenisnya"
+      ],
+      "3": [
+        "Alat Besar", "Alat Angkutan", "Alat Bengkel dan Alat Ukur",
+        "Alat Pertanian dan Perikanan", "Alat Kantor dan Rumah Tangga",
+        "Alat Studio, Komunikasi dan Pemancar", "Komputer", "Alat Pengeboran",
+        "Alat Produksi, Pengolahan dan Pemurnian", "Peralatan Olah Raga"
+      ],
+      "4": ["Bangunan Gedung", "Bangunan Monumen"],
+      "5": ["Jalan dan Jembatan", "Bangunan Air/Irigasi", "Instalasi", "Jaringan"],
+      "6": [
+        "Bahan Perpustakaan", "Barang Bercorak Seni/Kebudayaan/Olahraga",
+        "Hewan", "Ikan", "Tanaman", "Aset Tetap dalam Renovasi"
+      ],
+      "7": ["Proyek Konstruksi dalam Pengerjaan"],
+      "8": ["Hak Cipta", "Paten"]
+    };
+
+    const SEED_STATE = {
+      settings: {
+        nama_desa: "Desa Wuliwutik",
+        kecamatan: "Nita",
+        kabupaten: "Sikka",
+        provinsi: "Nusa Tenggara Timur",
+        kode_provinsi: "53",
+        kode_kabupaten: "07",
+        kode_kecamatan: "04",
+        kode_status_desa: "2",
+        no_urut_desa: "006",
+        kode_lokasi_10_digit: "53.07.04.2006",
+        tahun_inventarisasi_aktif: "2026",
+        nama_kepala_desa: "Kepala Desa Wuliwutik",
+        nama_sekretaris_desa: "Sekretaris Desa Wuliwutik",
+        nama_pengurus_aset: "Petugas/Pengurus Aset Desa",
+        nama_ketua_tim_inventarisasi: "Ketua Tim Inventarisasi Aset Desa",
+        gas_webapp_url: "",
+        folder_gdrive_foto_url: ""
+      },
+      assets: [
+        {
+          id_aset: "AST-WWT-001",
+          golongan: "2",
+          kode_barang: "2.12.01.01.001",
+          kode_lokasi: "53.07.04.2006",
+          kode_pengguna: "01",
+          nama_pengguna_barang: "Pemerintahan Desa",
+          tahun_perolehan: "2019",
+          no_urut_pendaftaran: "000001",
+          kelompok_juknis: "Tanah",
+          sub_jenis_aset: "Tanah untuk Bangunan Gedung",
+          kategori_kib: "KIB A",
+          nama_aset: "Tanah Kantor Desa Wuliwutik",
+          merk_tipe_spesifikasi: "Luas ± 1.850 m², batas sesuai dokumen desa",
+          jumlah_luas_volume: 1850,
+          satuan: "m2",
+          asal_usul: "Kekayaan Asli Desa",
+          tanggal_perolehan: "2019-05-14",
+          nilai_perolehan: 148000000,
+          nilai_wajar_taksiran: 165000000,
+          metode_penilaian: "NJOP",
+          kondisi: "Baik",
+          lokasi_fisik_ruangan: "Dusun Wuliwutik / Pusat Pemerintahan Desa",
+          penanggung_jawab: "Kepala Desa Wuliwutik",
+          status_dokumen: "Perlu Klarifikasi",
+          no_dokumen_ba: "BA-KLAR-01/WWT/2025",
+          catatan_klarifikasi_calk: "Sedang proses kelengkapan sertifikat/dokumen pendukung sesuai tahapan klarifikasi status kepemilikan.",
+          status_label: "Label Permanen",
+          foto_gdrive_url: "",
+          foto_gdrive_file_id: "",
+          foto_thumbnail_url: "",
+          tanggal_update: "2026-02-10"
+        },
+        {
+          id_aset: "AST-WWT-002",
+          golongan: "3",
+          kode_barang: "3.07.01.02.003",
+          kode_lokasi: "53.07.04.2006",
+          kode_pengguna: "01",
+          nama_pengguna_barang: "Pemerintahan Desa",
+          tahun_perolehan: "2024",
+          no_urut_pendaftaran: "000009",
+          kelompok_juknis: "Peralatan dan Mesin",
+          sub_jenis_aset: "Komputer",
+          kategori_kib: "KIB B",
+          nama_aset: "Laptop Notebook Bendahara Desa",
+          merk_tipe_spesifikasi: "Lenovo Core i7, RAM 16GB, SSD 512GB",
+          jumlah_luas_volume: 1,
+          satuan: "Unit",
+          asal_usul: "APBDes",
+          tanggal_perolehan: "2024-07-22",
+          nilai_perolehan: 11500000,
+          nilai_wajar_taksiran: 11500000,
+          metode_penilaian: "Harga Perolehan",
+          kondisi: "Baik",
+          lokasi_fisik_ruangan: "Ruang Keuangan / Kantor Desa Wuliwutik",
+          penanggung_jawab: "Bendahara Desa",
+          status_dokumen: "Lengkap",
+          no_dokumen_ba: "BAST-APBDes-09/2024",
+          catatan_klarifikasi_calk: "",
+          status_label: "Label Permanen",
+          foto_gdrive_url: "",
+          foto_gdrive_file_id: "",
+          foto_thumbnail_url: "",
+          tanggal_update: "2026-02-12"
+        },
+        {
+          id_aset: "AST-WWT-003",
+          golongan: "3",
+          kode_barang: "3.07.01.02.003",
+          kode_lokasi: "53.07.04.2006",
+          kode_pengguna: "02",
+          nama_pengguna_barang: "BPD",
+          tahun_perolehan: "2024",
+          no_urut_pendaftaran: "000010",
+          kelompok_juknis: "Peralatan dan Mesin",
+          sub_jenis_aset: "Komputer",
+          kategori_kib: "KIB B",
+          nama_aset: "Laptop Notebook Operasional BPD",
+          merk_tipe_spesifikasi: "Lenovo Core i7, RAM 16GB, SSD 512GB",
+          jumlah_luas_volume: 1,
+          satuan: "Unit",
+          asal_usul: "APBDes",
+          tanggal_perolehan: "2024-07-22",
+          nilai_perolehan: 11500000,
+          nilai_wajar_taksiran: 11500000,
+          metode_penilaian: "Harga Perolehan",
+          kondisi: "Rusak Ringan",
+          lokasi_fisik_ruangan: "Sekretariat BPD Desa Wuliwutik",
+          penanggung_jawab: "Ketua / Sekretaris BPD",
+          status_dokumen: "Lengkap",
+          no_dokumen_ba: "BAST-APBDes-10/2024",
+          catatan_klarifikasi_calk: "Baterai mulai menurun, unit masih dapat digunakan dengan adaptor.",
+          status_label: "Label Sementara",
+          foto_gdrive_url: "",
+          foto_gdrive_file_id: "",
+          foto_thumbnail_url: "",
+          tanggal_update: "2026-02-12"
+        },
+        {
+          id_aset: "AST-WWT-004",
+          golongan: "4",
+          kode_barang: "4.01.01.01.002",
+          kode_lokasi: "53.07.04.2006",
+          kode_pengguna: "01",
+          nama_pengguna_barang: "Pemerintahan Desa",
+          tahun_perolehan: "2021",
+          no_urut_pendaftaran: "000001",
+          kelompok_juknis: "Gedung dan Bangunan",
+          sub_jenis_aset: "Bangunan Gedung",
+          kategori_kib: "KIB C",
+          nama_aset: "Gedung Posyandu & PAUD Desa Wuliwutik",
+          merk_tipe_spesifikasi: "Bangunan permanen beton bertulang, ruang layanan & bermain",
+          jumlah_luas_volume: 1,
+          satuan: "Unit",
+          asal_usul: "APBDes",
+          tanggal_perolehan: "2021-11-18",
+          nilai_perolehan: 285000000,
+          nilai_wajar_taksiran: 285000000,
+          metode_penilaian: "Harga Perolehan",
+          kondisi: "Baik",
+          lokasi_fisik_ruangan: "Kompleks Layanan Masyarakat Desa Wuliwutik",
+          penanggung_jawab: "Kader Posyandu / Guru PAUD",
+          status_dokumen: "Lengkap",
+          no_dokumen_ba: "BAST-FISIK-2021-04",
+          catatan_klarifikasi_calk: "",
+          status_label: "Label Permanen",
+          foto_gdrive_url: "",
+          foto_gdrive_file_id: "",
+          foto_thumbnail_url: "",
+          tanggal_update: "2026-02-15"
+        },
+        {
+          id_aset: "AST-WWT-005",
+          golongan: "3",
+          kode_barang: "3.05.02.01.004",
+          kode_lokasi: "53.07.04.2006",
+          kode_pengguna: "01",
+          nama_pengguna_barang: "Pemerintahan Desa",
+          tahun_perolehan: "2018",
+          no_urut_pendaftaran: "000003",
+          kelompok_juknis: "Peralatan dan Mesin",
+          sub_jenis_aset: "Alat Kantor dan Rumah Tangga",
+          kategori_kib: "KIB B",
+          nama_aset: "Printer Multifungsi Kantor Desa",
+          merk_tipe_spesifikasi: "Canon / Epson Seri Ink Tank",
+          jumlah_luas_volume: 1,
+          satuan: "Unit",
+          asal_usul: "APBDes",
+          tanggal_perolehan: "2018-08-09",
+          nilai_perolehan: 0,
+          nilai_wajar_taksiran: 0,
+          metode_penilaian: "Belum Dinilai / CaLK",
+          kondisi: "Rusak Berat",
+          lokasi_fisik_ruangan: "Ruang Administrasi Kantor Desa",
+          penanggung_jawab: "Sekretaris Desa",
+          status_dokumen: "Belum Ada Nilai",
+          no_dokumen_ba: "INV-2026-RB-01",
+          catatan_klarifikasi_calk: "Dicatat pada daftar tersendiri & penjelasan CaLK karena dokumen harga perolehan lama belum ditemukan dan unit rusak berat.",
+          status_label: "Belum Berlabel",
+          foto_gdrive_url: "",
+          foto_gdrive_file_id: "",
+          foto_thumbnail_url: "",
+          tanggal_update: "2026-02-18"
+        }
+      ],
+      deletedAssets: [],
+      baLogs: [
+        {
+          id_ba: "BA-INV-WWT-2026-01",
+          tahun_inventarisasi: "2026",
+          tanggal_ba: "2026-02-20",
+          nomor_ba: "024/BA-INV/WWT/II/2026",
+          nomor_sptjm: "024/SPTJM-INV/WWT/II/2026",
+          ketua_tim: "Ketua Tim Inventarisasi Aset Desa",
+          sekretaris_desa_verifikator: "Sekretaris Desa Wuliwutik",
+          pengurus_aset: "Petugas/Pengurus Aset Desa",
+          kepala_desa_penerima: "Kepala Desa Wuliwutik",
+          ringkasan_temuan: "Seluruh aset terdata dengan kodefikasi lokasi 53.07.04.2006; terdapat aset tanah yang perlu klarifikasi dokumen dan 1 unit printer rusak berat tanpa nilai untuk dicatat pada CaLK.",
+          tindak_lanjut_catatan: "Melanjutkan penempelan label permanen, melengkapi dokumen klarifikasi kepemilikan, serta menyajikan nilai per golongan pada Laporan Kekayaan Milik Desa (Siskeudes).",
+          status_laporan: "Disahkan Tim & Sekdes"
+        }
+      ]
+    };
+
+    let appState = loadInitialState();
+    let currentView = "dashboard";
+    let currentReportTab = "buku";
+    let chartMode = "count";
+    let globalSearchQuery = "";
+    let selectedCategoryFilter = "ALL";
+    let selectedDeleteIds = new Set();
+    let tempUploadedPhotoBase64 = "";
+
+    function loadInitialState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            settings: { ...SEED_STATE.settings, ...(parsed.settings || {}) },
+            assets: Array.isArray(parsed.assets) ? parsed.assets : SEED_STATE.assets,
+            deletedAssets: Array.isArray(parsed.deletedAssets) ? parsed.deletedAssets : [],
+            baLogs: Array.isArray(parsed.baLogs) && parsed.baLogs.length ? parsed.baLogs : SEED_STATE.baLogs
+          };
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return JSON.parse(JSON.stringify(SEED_STATE));
+    }
+
+    function saveStateToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      updateTopbarStatus();
+    }
+
+    function updateTopbarStatus() {
+      const loc = buildKodeLokasiFromSettings(appState.settings);
+      appState.settings.kode_lokasi_10_digit = loc;
+      document.getElementById("topbar-kode-lokasi").textContent = `Kode Desa: ${loc}`;
+      document.getElementById("topbar-pengurus-nama").textContent = appState.settings.nama_pengurus_aset || "Pengurus Aset Desa";
+      const badge = document.getElementById("conn-status-badge");
+      if (appState.settings.gas_webapp_url && appState.settings.gas_webapp_url.trim().startsWith("http")) {
+        badge.className = "conn-pill live";
+        badge.textContent = "● Google Sheets Terhubung";
+      } else {
+        badge.className = "conn-pill demo";
+        badge.textContent = "● Mode Pratinjau Lokal";
+      }
+    }
+
+    function buildKodeLokasiFromSettings(s) {
+      const p = String(s.kode_provinsi || "53").padStart(2, "0").slice(0, 2);
+      const k = String(s.kode_kabupaten || "07").padStart(2, "0").slice(0, 2);
+      const kec = String(s.kode_kecamatan || "04").padStart(2, "0").slice(0, 2);
+      const st = String(s.kode_status_desa || "2").padStart(1, "0").slice(0, 1);
+      const urut = String(s.no_urut_desa || "006").padStart(3, "0").slice(0, 3);
+      return `${p}.${k}.${kec}.${st}${urut}`;
+    }
+
+    function formatRupiah(num) {
+      return "Rp " + Number(num || 0).toLocaleString("id-ID");
+    }
+
+    function formatJuta(num) {
+      return (Number(num || 0) / 1000000).toLocaleString("id-ID", { maximumFractionDigits: 1 }) + " Jt";
+    }
+
+    function getAssetEffectiveValue(asset) {
+      const perolehan = Number(asset.nilai_perolehan || 0);
+      const wajar = Number(asset.nilai_wajar_taksiran || 0);
+      if (asset.metode_penilaian === "Belum Dinilai / CaLK") return 0;
+      if (perolehan > 0) return perolehan;
+      return wajar;
+    }
+
+    function extractGoogleDriveId(url) {
+      if (!url) return "";
+      const patterns = [
+        /\/file\/d\/([a-zA-Z0-9_-]{10,})/,
+        /[?&]id=([a-zA-Z0-9_-]{10,})/,
+        /\/d\/([a-zA-Z0-9_-]{10,})/
+      ];
+      for (const re of patterns) {
+        const m = String(url).match(re);
+        if (m && m[1]) return m[1];
+      }
+      return "";
+    }
+
+    function getPhotoDisplayUrl(asset) {
+      if (asset.foto_thumbnail_url && asset.foto_thumbnail_url.startsWith("data:image")) {
+        return asset.foto_thumbnail_url;
+      }
+      const fileId = asset.foto_gdrive_file_id || extractGoogleDriveId(asset.foto_gdrive_url);
+      if (fileId) {
+        return `https://lh3.googleusercontent.com/d/${fileId}=w600`;
+      }
+      return asset.foto_gdrive_url || "";
+    }
+
+    function showToast(message, type = "info") {
+      const box = document.getElementById("toast-box");
+      box.textContent = message;
+      box.style.background = type === "error" ? "#991b1b" : type === "success" ? "#065f46" : "#1e1b4b";
+      box.classList.add("show");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => box.classList.remove("show"), 3400);
+    }
+
+    function switchView(viewName) {
+      currentView = viewName;
+      document.querySelectorAll(".nav-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.view === viewName);
+      });
+      renderCurrentView();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openInputView(editId = null) {
+      currentView = "input";
+      document.querySelectorAll(".nav-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.view === "input");
+      });
+      renderCurrentView(editId);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function handleGlobalSearch(val) {
+      globalSearchQuery = val.trim().toLowerCase();
+      if (currentView !== "inventory" && currentView !== "dashboard") {
+        switchView("inventory");
+      } else {
+        renderCurrentView();
+      }
+    }
+
+    function getFilteredAssets() {
+      return appState.assets.filter((a) => {
+        if (selectedCategoryFilter !== "ALL" && String(a.golongan) !== String(selectedCategoryFilter)) {
+          return false;
+        }
+        if (globalSearchQuery) {
+          const hay = [
+            a.kode_barang,
+            a.kode_lokasi,
+            a.kode_pengguna,
+            a.tahun_perolehan,
+            a.no_urut_pendaftaran,
+            a.nama_aset,
+            a.kelompok_juknis,
+            a.sub_jenis_aset,
+            a.kategori_kib,
+            a.lokasi_fisik_ruangan,
+            a.merk_tipe_spesifikasi,
+            a.penanggung_jawab
+          ].join(" ").toLowerCase();
+          if (!hay.includes(globalSearchQuery)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderCurrentView(editId = null) {
+      updateTopbarStatus();
+      const container = document.getElementById("app-content");
+      if (currentView === "dashboard") {
+        container.innerHTML = renderDashboardView();
+      } else if (currentView === "inventory") {
+        container.innerHTML = renderInventoryListView();
+      } else if (currentView === "input") {
+        container.innerHTML = renderInputFormView(editId);
+        initInputFormEvents(editId);
+      } else if (currentView === "deletion") {
+        container.innerHTML = renderDeletionView();
+      } else if (currentView === "reports") {
+        container.innerHTML = renderReportsView();
+      } else if (currentView === "settings") {
+        container.innerHTML = renderSettingsView();
+      }
+    }
+
+    /* ================= DASHBOARD VIEW ================= */
+    function renderDashboardView() {
+      const assets = appState.assets;
+      const totalItems = assets.length;
+      const baikCount = assets.filter((a) => a.kondisi === "Baik").length;
+      const rusakCount = assets.filter((a) => a.kondisi === "Rusak Ringan" || a.kondisi === "Rusak Berat").length;
+      const klarifikasiCount = assets.filter((a) => a.status_dokumen !== "Lengkap").length;
+      const totalNilai = assets.reduce((sum, a) => sum + getAssetEffectiveValue(a), 0);
+      const pctBaik = totalItems ? Math.round((baikCount / totalItems) * 100) : 0;
+
+      const catCardsHtml = Object.entries(GOLONGAN_META).map(([gol, meta]) => {
+        const items = assets.filter((a) => String(a.golongan) === gol);
+        const count = items.length;
+        const baik = items.filter((a) => a.kondisi === "Baik").length;
+        const pct = count ? Math.round((baik / count) * 100) : 0;
+        const nilai = items.reduce((s, a) => s + getAssetEffectiveValue(a), 0);
+        return `
+          <div class="cat-card" style="background:${meta.color}" onclick="filterByGolongan('${gol}')">
+            <div>
+              <div class="cat-top">
+                <span>GOL. ${gol} • ${meta.kib}</span>
+                <span class="cat-pill">${count} ITEM</span>
+              </div>
+              <div class="cat-title">${meta.name}</div>
+              <div class="cat-desc">${meta.desc}</div>
+            </div>
+            <div class="cat-foot">
+              <span>${pct}% Baik</span>
+              <span>${formatRupiah(nilai)}</span>
             </div>
           </div>
         `;
-      } else if (tab === 'kekayaan') {
-... existing code ...
-    function handleLocalPhotoUpload(event) {
+      }).join("");
+
+      return `
+        <div class="top-grid">
+          <div class="hero-card">
+            <div>
+              <div class="hero-tag">🏛️ PEMERINTAH DESA WULIWTIK • KEC. NITA • KAB. SIKKA</div>
+              <h1>Sistem Inventarisasi Aset Desa Wuliwutik</h1>
+              <p>
+                Penatausahaan, kodefikasi (Kode Lokasi <strong>${appState.settings.kode_lokasi_10_digit}</strong>), klarifikasi status kepemilikan, dokumentasi foto Google Drive, dan pelaporan sesuai Juknis Inventarisasi Aset Desa Kabupaten Sikka Tahun ${appState.settings.tahun_inventarisasi_aktif}.
+              </p>
+              <div class="hero-total-box">
+                <small>Total Nilai Aset Tercatat (${totalItems} Item Aktif)</small>
+                <strong>${formatRupiah(totalNilai)}</strong>
+              </div>
+            </div>
+            <div class="hero-actions">
+              <button class="btn btn-light" onclick="openInputView()">➕ Input Inventaris</button>
+              <button class="btn btn-soft-purple" onclick="switchView('deletion')">🗑️ Penghapusan Inventaris</button>
+              <button class="btn btn-soft-purple" onclick="switchView('reports')">📄 Laporan Juknis</button>
+              <button class="btn btn-soft-purple" onclick="syncFromGoogleSheets()">🔄 Sinkronkan Sheet</button>
+            </div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span>Total Aset Aktif</span>
+                <span class="kpi-badge st-purple">8 Golongan</span>
+              </div>
+              <div class="kpi-val">${totalItems} Item</div>
+              <div class="kpi-sub">Terdaftar di Aset_Utama</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span>Kondisi Baik</span>
+                <span class="kpi-badge st-baik">${pctBaik}%</span>
+              </div>
+              <div class="kpi-val">${baikCount} Unit/Item</div>
+              <div class="kpi-sub">Siap digunakan pelayanan desa</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span>Perlu Perbaikan / Rusak</span>
+                <span class="kpi-badge st-ringan">RR & RB</span>
+              </div>
+              <div class="kpi-val">${rusakCount} Item</div>
+              <div class="kpi-sub">Rusak ringan & rusak berat</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span>Klarifikasi / CaLK</span>
+                <span class="kpi-badge st-info">Dokumen</span>
+              </div>
+              <div class="kpi-val">${klarifikasiCount} Item</div>
+              <div class="kpi-sub">Perlu klarifikasi / belum bernilai</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Pengelompokan Aset Desa (Juknis Bab II & Padanan KIB)</h2>
+            <p>Klik salah satu kartu golongan untuk menyaring daftar aset berdasarkan golongan tersebut.</p>
+          </div>
+          <button class="btn btn-light btn-sm" onclick="filterByGolongan('ALL')">Lihat Semua Aset →</button>
+        </div>
+
+        <div class="cat-grid">
+          ${catCardsHtml}
+        </div>
+
+        <div class="panel-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3>Statistik Aset Per Golongan</h3>
+              <div class="segmented">
+                <button class="${chartMode === 'count' ? 'active' : ''}" onclick="setChartMode('count')">Jumlah Item</button>
+                <button class="${chartMode === 'value' ? 'active' : ''}" onclick="setChartMode('value')">Nilai (Juta Rp)</button>
+              </div>
+            </div>
+            ${renderBarChartSvg()}
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Ringkasan Rekapitulasi & Cetak Resmi</h3>
+            </div>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
+              Akses cepat dokumen pelaporan sesuai Bab III Juknis Kabupaten Sikka: Buku Inventaris Aset Desa, Berita Acara & SPTJM, Laporan Kekayaan Milik Desa, dan Daftar Aset Tanpa Nilai (CaLK).
+            </p>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <button class="btn btn-primary" onclick="switchView('reports')">📑 Buka Menu Laporan Inventaris</button>
+              <button class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor Data Aset ke CSV</button>
+              <button class="btn btn-soft-danger" onclick="switchView('deletion')">🗑️ Kelola Penghapusan & Arsip (${appState.deletedAssets.length})</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function setChartMode(mode) {
+      chartMode = mode;
+      renderCurrentView();
+    }
+
+    function renderBarChartSvg() {
+      const entries = Object.entries(GOLONGAN_META).map(([gol, meta]) => {
+        const list = appState.assets.filter((a) => String(a.golongan) === gol);
+        const val = chartMode === "count"
+          ? list.length
+          : list.reduce((s, a) => s + getAssetEffectiveValue(a), 0) / 1000000;
+        return { gol, label: `G${gol}`, val: Number(val.toFixed(1)) };
+      });
+      const maxVal = Math.max(1, ...entries.map((e) => e.val));
+      const barW = 46;
+      const gap = 22;
+      const svgW = entries.length * (barW + gap) + 40;
+      const svgH = 210;
+      const baseY = 172;
+
+      const bars = entries.map((e, i) => {
+        const h = Math.round((e.val / maxVal) * 120);
+        const x = 28 + i * (barW + gap);
+        const y = baseY - h;
+        return `
+          <text x="${x + barW / 2}" y="${y - 6}" text-anchor="middle" font-size="11" font-weight="700" fill="#4c1d95">${e.val}</text>
+          <rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="7" fill="#7c3aed"></rect>
+          <text x="${x + barW / 2}" y="${baseY + 18}" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">${e.label}</text>
+        `;
+      }).join("");
+
+      return `
+        <div style="overflow-x:auto;">
+          <svg width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}">
+            <line x1="20" y1="${baseY}" x2="${svgW - 10}" y2="${baseY}" stroke="#cbd5e1" stroke-width="1.5"></line>
+            ${bars}
+          </svg>
+        </div>
+      `;
+    }
+
+    function filterByGolongan(gol) {
+      selectedCategoryFilter = gol;
+      switchView("inventory");
+    }
+
+    /* ================= INVENTORY LIST VIEW ================= */
+    function renderInventoryListView() {
+      const filtered = getFilteredAssets();
+      const rows = filtered.map((a, idx) => {
+        const kondClass = a.kondisi === "Baik" ? "st-baik" : a.kondisi === "Rusak Ringan" ? "st-ringan" : "st-berat";
+        const photoUrl = getPhotoDisplayUrl(a);
+        const photoHtml = photoUrl
+          ? `<img src="${photoUrl}" alt="${escapeHtml(a.nama_aset)}" class="thumb-mini" onerror="this.style.display='none'" />`
+          : `<span class="status-badge st-info">Tanpa Foto</span>`;
+
+        return `
+          <tr>
+            <td>${idx + 1}</td>
+            <td>
+              <div class="reg-stacked">
+                <div class="reg-top">${escapeHtml(a.kode_lokasi)} • ${escapeHtml(a.kode_pengguna)} • ${escapeHtml(a.tahun_perolehan)}</div>
+                <div class="reg-bot">${escapeHtml(a.kode_barang)} • ${escapeHtml(String(a.no_urut_pendaftaran).padStart(6, "0"))}</div>
+              </div>
+            </td>
+            <td>
+              <strong>${escapeHtml(a.nama_aset)}</strong><br/>
+              <small style="color:var(--text-muted)">${escapeHtml(a.kelompok_juknis)} (${escapeHtml(a.kategori_kib)}) — ${escapeHtml(a.sub_jenis_aset)}</small><br/>
+              <small style="color:#475569">${escapeHtml(a.merk_tipe_spesifikasi || "-")}</small>
+            </td>
+            <td>${Number(a.jumlah_luas_volume || 0).toLocaleString("id-ID")} ${escapeHtml(a.satuan)}</td>
+            <td><span class="status-badge ${kondClass}">${escapeHtml(a.kondisi)}</span></td>
+            <td>
+              ${escapeHtml(a.lokasi_fisik_ruangan)}<br/>
+              <small style="color:var(--text-muted)">Pengguna: ${escapeHtml(a.nama_pengguna_barang)} (${escapeHtml(a.kode_pengguna)})</small>
+            </td>
+            <td>
+              <strong>${formatRupiah(getAssetEffectiveValue(a))}</strong><br/>
+              <small style="color:var(--text-muted)">${escapeHtml(a.metode_penilaian)}</small>
+            </td>
+            <td>${photoHtml}</td>
+            <td style="white-space:nowrap;">
+              <button class="btn btn-light btn-sm" onclick="openDetailModal('${a.id_aset}')" title="Detail & Label">🏷️</button>
+              <button class="btn btn-soft-purple btn-sm" onclick="openInputView('${a.id_aset}')" title="Edit">✏️</button>
+              <button class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')" title="Hapus">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      const catOptions = Object.entries(GOLONGAN_META)
+        .map(([g, m]) => `<option value="${g}" ${selectedCategoryFilter === g ? "selected" : ""}>Gol. ${g} - ${m.name} (${m.kib})</option>`)
+        .join("");
+
+      return `
+        <div class="section-head">
+          <div>
+            <h2>Daftar Inventaris Aset Desa Wuliwutik</h2>
+            <p>Menampilkan <strong>${filtered.length}</strong> dari <strong>${appState.assets.length}</strong> aset aktif • Kode Lokasi: <strong>${appState.settings.kode_lokasi_10_digit}</strong></p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openInputView()">➕ Input Inventaris</button>
+            <button class="btn btn-soft-danger" onclick="switchView('deletion')">🗑️ Penghapusan Inventaris</button>
+            <button class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor CSV</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="filter-bar">
+            <select class="form-control" onchange="selectedCategoryFilter = this.value; renderCurrentView();">
+              <option value="ALL">Semua Golongan / KIB</option>
+              ${catOptions}
+            </select>
+            <select class="form-control" id="filter-kondisi" onchange="applyExtraTableFilters()">
+              <option value="ALL">Semua Kondisi</option>
+              <option value="Baik">Baik</option>
+              <option value="Rusak Ringan">Rusak Ringan</option>
+              <option value="Rusak Berat">Rusak Berat</option>
+            </select>
+            <select class="form-control" id="filter-dokumen" onchange="applyExtraTableFilters()">
+              <option value="ALL">Semua Status Dokumen</option>
+              <option value="Lengkap">Lengkap</option>
+              <option value="Perlu Klarifikasi">Perlu Klarifikasi</option>
+              <option value="Sengketa">Sengketa</option>
+              <option value="Belum Ada Nilai">Belum Ada Nilai</option>
+            </select>
+            <select class="form-control" id="filter-pengguna" onchange="applyExtraTableFilters()">
+              <option value="ALL">Semua Pengguna Barang</option>
+              <option value="01">01 - Pemerintahan Desa</option>
+              <option value="02">02 - BPD</option>
+              <option value="03">03 - Lembaga Kemasyarakatan</option>
+            </select>
+            <button class="btn btn-light" onclick="resetAllFilters()">↺ Reset Filter</button>
+          </div>
+
+          <div class="table-wrap">
+            <table id="inventory-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Kode Register</th>
+                  <th>Nama & Klasifikasi Aset</th>
+                  <th>Jumlah / Luas</th>
+                  <th>Kondisi</th>
+                  <th>Lokasi & Pengguna</th>
+                  <th>Nilai Aset</th>
+                  <th>Foto</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows || `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted)">Tidak ada data aset yang cocok dengan filter/pencarian.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function applyExtraTableFilters() {
+      const kond = document.getElementById("filter-kondisi")?.value || "ALL";
+      const dok = document.getElementById("filter-dokumen")?.value || "ALL";
+      const peng = document.getElementById("filter-pengguna")?.value || "ALL";
+
+      const base = getFilteredAssets().filter((a) => {
+        if (kond !== "ALL" && a.kondisi !== kond) return false;
+        if (dok !== "ALL" && a.status_dokumen !== dok) return false;
+        if (peng !== "ALL" && String(a.kode_pengguna) !== peng) return false;
+        return true;
+      });
+
+      const tbody = document.querySelector("#inventory-table tbody");
+      if (!tbody) return;
+      tbody.innerHTML = base.map((a, idx) => {
+        const kondClass = a.kondisi === "Baik" ? "st-baik" : a.kondisi === "Rusak Ringan" ? "st-ringan" : "st-berat";
+        const photoUrl = getPhotoDisplayUrl(a);
+        const photoHtml = photoUrl
+          ? `<img src="${photoUrl}" alt="${escapeHtml(a.nama_aset)}" class="thumb-mini" onerror="this.style.display='none'" />`
+          : `<span class="status-badge st-info">Tanpa Foto</span>`;
+        return `
+          <tr>
+            <td>${idx + 1}</td>
+            <td>
+              <div class="reg-stacked">
+                <div class="reg-top">${escapeHtml(a.kode_lokasi)} • ${escapeHtml(a.kode_pengguna)} • ${escapeHtml(a.tahun_perolehan)}</div>
+                <div class="reg-bot">${escapeHtml(a.kode_barang)} • ${escapeHtml(String(a.no_urut_pendaftaran).padStart(6, "0"))}</div>
+              </div>
+            </td>
+            <td>
+              <strong>${escapeHtml(a.nama_aset)}</strong><br/>
+              <small style="color:var(--text-muted)">${escapeHtml(a.kelompok_juknis)} (${escapeHtml(a.kategori_kib)}) — ${escapeHtml(a.sub_jenis_aset)}</small>
+            </td>
+            <td>${Number(a.jumlah_luas_volume || 0).toLocaleString("id-ID")} ${escapeHtml(a.satuan)}</td>
+            <td><span class="status-badge ${kondClass}">${escapeHtml(a.kondisi)}</span></td>
+            <td>${escapeHtml(a.lokasi_fisik_ruangan)}</td>
+            <td><strong>${formatRupiah(getAssetEffectiveValue(a))}</strong></td>
+            <td>${photoHtml}</td>
+            <td style="white-space:nowrap;">
+              <button class="btn btn-light btn-sm" onclick="openDetailModal('${a.id_aset}')">🏷️</button>
+              <button class="btn btn-soft-purple btn-sm" onclick="openInputView('${a.id_aset}')">✏️</button>
+              <button class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join("") || `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted)">Tidak ada data yang sesuai filter.</td></tr>`;
+    }
+
+    function resetAllFilters() {
+      selectedCategoryFilter = "ALL";
+      globalSearchQuery = "";
+      document.getElementById("global-search").value = "";
+      renderCurrentView();
+    }
+
+    /* ================= INPUT / EDIT VIEW ================= */
+    function renderInputFormView(editId = null) {
+      tempUploadedPhotoBase64 = "";
+      const existing = editId ? appState.assets.find((a) => a.id_aset === editId) : null;
+      const defaultGol = existing ? String(existing.golongan) : "3";
+      const defaultYear = existing ? existing.tahun_perolehan : appState.settings.tahun_inventarisasi_aktif;
+      const nextUrut = existing
+        ? existing.no_urut_pendaftaran
+        : String(appState.assets.length + 1).padStart(6, "0");
+
+      const golOpts = Object.entries(GOLONGAN_META)
+        .map(([g, m]) => `<option value="${g}" ${defaultGol === g ? "selected" : ""}>Golongan ${g} — ${m.name} (${m.kib})</option>`)
+        .join("");
+
+      const subOpts = (SUB_JENIS_BY_GOLONGAN[defaultGol] || [])
+        .map((s) => `<option value="${escapeAttr(s)}" ${existing && existing.sub_jenis_aset === s ? "selected" : ""}>${escapeHtml(s)}</option>`)
+        .join("");
+
+      return `
+        <div class="section-head">
+          <div>
+            <h2>${existing ? "Edit Data Inventaris Aset" : "Input Inventaris Aset Baru"} — Desa Wuliwutik</h2>
+            <p>Kode Lokasi otomatis <strong>${appState.settings.kode_lokasi_10_digit}</strong> sesuai struktur kodefikasi Juknis Kabupaten Sikka.</p>
+          </div>
+          <button class="btn btn-light" onclick="switchView('inventory')">← Kembali ke Daftar Aset</button>
+        </div>
+
+        <form class="card" id="asset-form" onsubmit="handleSaveAsset(event)">
+          <input type="hidden" id="edit-asset-id" value="${existing ? escapeAttr(existing.id_aset) : ""}" />
+
+          <div class="form-grid-3" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Golongan Aset (Juknis Bab II)</label>
+              <select class="form-control" id="inp-golongan" onchange="onGolonganChange()">
+                ${golOpts}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sub-Jenis Aset</label>
+              <select class="form-control" id="inp-subjenis">
+                ${subOpts}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Kode Barang (10 Digit: X.XX.XX.XX.XXX)</label>
+              <input type="text" class="form-control" id="inp-kode-barang" required value="${existing ? escapeAttr(existing.kode_barang) : GOLONGAN_META[defaultGol].presetCode}" oninput="updateRegisterPreview()" />
+            </div>
+          </div>
+
+          <div class="form-grid-3" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Kode Pengguna Barang (2 Digit)</label>
+              <select class="form-control" id="inp-pengguna" onchange="updateRegisterPreview()">
+                <option value="01|Pemerintahan Desa" ${existing && existing.kode_pengguna === "01" ? "selected" : ""}>01 — Pemerintahan Desa</option>
+                <option value="02|BPD" ${existing && existing.kode_pengguna === "02" ? "selected" : ""}>02 — BPD</option>
+                <option value="03|Lembaga Kemasyarakatan" ${existing && existing.kode_pengguna === "03" ? "selected" : ""}>03 — RT/RW / Lembaga Kemasyarakatan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tahun Perolehan (4 Digit)</label>
+              <input type="number" class="form-control" id="inp-tahun" min="1970" max="2099" required value="${escapeAttr(defaultYear)}" oninput="updateRegisterPreview()" />
+            </div>
+            <div class="form-group">
+              <label>Nomor Urut Pendaftaran (6 Digit)</label>
+              <input type="text" class="form-control" id="inp-nourut" required value="${escapeAttr(nextUrut)}" oninput="updateRegisterPreview()" />
+            </div>
+          </div>
+
+          <div style="background:#f8f7ff;border:1px solid #ddd6fe;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <div>
+              <strong style="font-size:12.5px;color:var(--primary-dark);">Pratinjau Kode Register (Format Juknis):</strong>
+              <div style="font-size:11.5px;color:var(--text-muted);">Lokasi ${appState.settings.kode_lokasi_10_digit} • Pengguna • Tahun / Kode Barang • No. Urut</div>
+            </div>
+            <div id="register-live-preview" class="reg-stacked"></div>
+          </div>
+
+          <div class="form-grid-2" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Nama Aset / Barang *</label>
+              <input type="text" class="form-control" id="inp-nama" required placeholder="Contoh: Laptop Operasional Kantor Desa" value="${existing ? escapeAttr(existing.nama_aset) : ""}" />
+            </div>
+            <div class="form-group">
+              <label>Merek / Tipe / Spesifikasi / Ukuran</label>
+              <input type="text" class="form-control" id="inp-spesifikasi" placeholder="Contoh: Lenovo Core i7, RAM 16GB" value="${existing ? escapeAttr(existing.merk_tipe_spesifikasi) : ""}" />
+            </div>
+          </div>
+
+          <div class="form-grid-3" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Jumlah / Luas / Volume *</label>
+              <input type="number" step="any" class="form-control" id="inp-jumlah" required value="${existing ? existing.jumlah_luas_volume : 1}" />
+            </div>
+            <div class="form-group">
+              <label>Satuan *</label>
+              <input type="text" class="form-control" id="inp-satuan" required value="${existing ? escapeAttr(existing.satuan) : "Unit"}" />
+            </div>
+            <div class="form-group">
+              <label>Kondisi Fisik *</label>
+              <select class="form-control" id="inp-kondisi">
+                <option value="Baik" ${existing && existing.kondisi === "Baik" ? "selected" : ""}>Baik</option>
+                <option value="Rusak Ringan" ${existing && existing.kondisi === "Rusak Ringan" ? "selected" : ""}>Rusak Ringan</option>
+                <option value="Rusak Berat" ${existing && existing.kondisi === "Rusak Berat" ? "selected" : ""}>Rusak Berat</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-3" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Asal-Usul Perolehan</label>
+              <select class="form-control" id="inp-asal">
+                <option value="APBDes" ${existing && existing.asal_usul === "APBDes" ? "selected" : ""}>APBDes</option>
+                <option value="Kekayaan Asli Desa" ${existing && existing.asal_usul === "Kekayaan Asli Desa" ? "selected" : ""}>Kekayaan Asli Desa</option>
+                <option value="Hibah / Serah Terima" ${existing && existing.asal_usul === "Hibah / Serah Terima" ? "selected" : ""}>Hibah / Serah Terima</option>
+                <option value="APBD / APBN / Bantuan" ${existing && existing.asal_usul === "APBD / APBN / Bantuan" ? "selected" : ""}>APBD / APBN / Bantuan</option>
+                <option value="Klarifikasi / Surat Keterangan" ${existing && existing.asal_usul === "Klarifikasi / Surat Keterangan" ? "selected" : ""}>Klarifikasi / Surat Keterangan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tanggal Perolehan</label>
+              <input type="date" class="form-control" id="inp-tanggal" value="${existing ? escapeAttr(existing.tanggal_perolehan) : new Date().toISOString().slice(0, 10)}" />
+            </div>
+            <div class="form-group">
+              <label>Status Pelabelan</label>
+              <select class="form-control" id="inp-status-label">
+                <option value="Label Sementara" ${existing && existing.status_label === "Label Sementara" ? "selected" : ""}>Label Sementara</option>
+                <option value="Label Permanen" ${existing && existing.status_label === "Label Permanen" ? "selected" : ""}>Label Permanen</option>
+                <option value="Belum Berlabel" ${existing && existing.status_label === "Belum Berlabel" ? "selected" : ""}>Belum Berlabel</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-3" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Nilai Perolehan (Rp)</label>
+              <input type="number" class="form-control" id="inp-nilai" min="0" value="${existing ? existing.nilai_perolehan : 0}" />
+            </div>
+            <div class="form-group">
+              <label>Nilai Wajar / NJOP / Taksiran (Rp)</label>
+              <input type="number" class="form-control" id="inp-nilai-wajar" min="0" value="${existing ? existing.nilai_wajar_taksiran : 0}" />
+            </div>
+            <div class="form-group">
+              <label>Metode Penilaian (Juknis 3.2.3)</label>
+              <select class="form-control" id="inp-metode-nilai">
+                <option value="Harga Perolehan" ${existing && existing.metode_penilaian === "Harga Perolehan" ? "selected" : ""}>Harga Perolehan</option>
+                <option value="NJOP" ${existing && existing.metode_penilaian === "NJOP" ? "selected" : ""}>NJOP (Tanah/Bangunan)</option>
+                <option value="Harga Pasar/Sejenis" ${existing && existing.metode_penilaian === "Harga Pasar/Sejenis" ? "selected" : ""}>Harga Pasar / Sejenis</option>
+                <option value="Nilai Taksiran Tim" ${existing && existing.metode_penilaian === "Nilai Taksiran Tim" ? "selected" : ""}>Nilai Taksiran Tim</option>
+                <option value="Belum Dinilai / CaLK" ${existing && existing.metode_penilaian === "Belum Dinilai / CaLK" ? "selected" : ""}>Belum Dinilai / CaLK</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-3" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Lokasi Fisik / Ruangan</label>
+              <input type="text" class="form-control" id="inp-lokasi-fisik" value="${existing ? escapeAttr(existing.lokasi_fisik_ruangan) : "Kantor Desa Wuliwutik"}" />
+            </div>
+            <div class="form-group">
+              <label>Penanggung Jawab</label>
+              <input type="text" class="form-control" id="inp-pj" value="${existing ? escapeAttr(existing.penanggung_jawab) : ""}" />
+            </div>
+            <div class="form-group">
+              <label>Status Dokumen & Klarifikasi</label>
+              <select class="form-control" id="inp-status-dokumen">
+                <option value="Lengkap" ${existing && existing.status_dokumen === "Lengkap" ? "selected" : ""}>Lengkap</option>
+                <option value="Perlu Klarifikasi" ${existing && existing.status_dokumen === "Perlu Klarifikasi" ? "selected" : ""}>Perlu Klarifikasi</option>
+                <option value="Sengketa" ${existing && existing.status_dokumen === "Sengketa" ? "selected" : ""}>Sengketa</option>
+                <option value="Belum Ada Nilai" ${existing && existing.status_dokumen === "Belum Ada Nilai" ? "selected" : ""}>Belum Ada Nilai</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Nomor Dokumen / BAST / Berita Acara</label>
+              <input type="text" class="form-control" id="inp-nodokumen" value="${existing ? escapeAttr(existing.no_dokumen_ba) : ""}" />
+            </div>
+            <div class="form-group">
+              <label>Catatan Klarifikasi Kepemilikan / Penjelasan CaLK</label>
+              <input type="text" class="form-control" id="inp-catatan" value="${existing ? escapeAttr(existing.catatan_klarifikasi_calk) : ""}" />
+            </div>
+          </div>
+
+          <div class="form-grid-2" style="margin-bottom:18px;">
+            <div class="form-group">
+              <label>Tautan Foto Google Drive</label>
+              <input type="text" class="form-control" id="inp-foto-url" placeholder="https://drive.google.com/file/d/.../view" value="${existing ? escapeAttr(existing.foto_gdrive_url) : ""}" oninput="updatePhotoPreviewFromInput()" />
+              <small>ID File terdeteksi: <strong id="detected-drive-id">${existing && existing.foto_gdrive_file_id ? escapeHtml(existing.foto_gdrive_file_id) : "-"}</strong></small>
+              <label style="margin-top:6px;">Atau Unggah Foto dari Perangkat</label>
+              <input type="file" accept="image/*" class="form-control" onchange="handleLocalPhotoUpload(event)" />
+            </div>
+            <div class="photo-preview-box" id="form-photo-preview">
+              ${existing && getPhotoDisplayUrl(existing)
+                ? `<img src="${getPhotoDisplayUrl(existing)}" alt="Pratinjau Foto Aset" />`
+                : `<span style="font-size:12.5px;color:var(--text-muted)">Pratinjau dokumentasi foto fisik aset akan tampil di sini.</span>`}
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button type="submit" class="btn btn-primary" onclick="setPendingSubmitMode('list')">💾 Simpan Inventaris</button>
+            <button type="submit" class="btn btn-soft-purple" onclick="setPendingSubmitMode('again')">➕ Simpan & Input Lagi</button>
+            <button type="button" class="btn btn-light" onclick="switchView('inventory')">Batal</button>
+          </div>
+        </form>
+      `;
+    }
+
+    function initInputFormEvents(editId) {
+      updateRegisterPreview();
+      if (!editId) {
+        onGolonganChange(false);
+      }
+    }
+
+    function onGolonganChange(overwriteCode = true) {
+      const gol = document.getElementById("inp-golongan").value;
+      const subSel = document.getElementById("inp-subjenis");
+      const subs = SUB_JENIS_BY_GOLONGAN[gol] || ["Umum"];
+      subSel.innerHTML = subs.map((s) => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`).join("");
+      if (overwriteCode && GOLONGAN_META[gol]) {
+        document.getElementById("inp-kode-barang").value = GOLONGAN_META[gol].presetCode;
+      }
+      updateRegisterPreview();
+    }
+
+    function updateRegisterPreview() {
+      const el = document.getElementById("register-live-preview");
+      if (!el) return;
+      const loc = appState.settings.kode_lokasi_10_digit;
+      const [pengCode] = (document.getElementById("inp-pengguna")?.value || "01|Pemerintahan Desa").split("|");
+      const yr = document.getElementById("inp-tahun")?.value || appState.settings.tahun_inventarisasi_aktif;
+      const kb = document.getElementById("inp-kode-barang")?.value || "3.02.01.04.001";
+      const urut = String(document.getElementById("inp-nourut")?.value || "1").padStart(6, "0");
+
+      el.innerHTML = `
+        <div class="reg-top">${escapeHtml(loc)} • ${escapeHtml(pengCode)} • ${escapeHtml(yr)}</div>
+        <div class="reg-bot">${escapeHtml(kb)} • ${escapeHtml(urut)}</div>
+      `;
+    }
+
+    function updatePhotoPreviewFromInput() {
+      const url = document.getElementById("inp-foto-url").value.trim();
+      const fileId = extractGoogleDriveId(url);
+      document.getElementById("detected-drive-id").textContent = fileId || "-";
+      const box = document.getElementById("form-photo-preview");
+      if (!url) {
+        box.innerHTML = `<span style="font-size:12.5px;color:var(--text-muted)">Pratinjau dokumentasi foto fisik aset akan tampil di sini.</span>`;
+        return;
+      }
+      const imgSrc = fileId ? `https://lh3.googleusercontent.com/d/${fileId}=w600` : url;
+      box.innerHTML = `<img src="${escapeAttr(imgSrc)}" alt="Pratinjau Foto" onerror="this.outerHTML='<small style=color:#92400e>Tautan tersimpan. Pastikan izin berbagi file Google Drive aktif untuk melihat gambar langsung.</small>'" />`;
+    }
+
+    let pendingSubmitMode = "list";
+    function setPendingSubmitMode(mode) {
+      pendingSubmitMode = mode;
+    }
+
+    async function handleLocalPhotoUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = async function(e) {
+      reader.onload = async function (e) {
         const base64Data = e.target.result;
-        appState.tempUploadedPhotoBase64 = base64Data;
-        const previewBox = document.getElementById('form-photo-preview');
-        previewBox.innerHTML = `<img src="${base64Data}" alt="Upload Lokal" class="w-full h-full object-cover" />`;
+        tempUploadedPhotoBase64 = base64Data;
+        const box = document.getElementById("form-photo-preview");
+        box.innerHTML = `<img src="${base64Data}" alt="Foto Lokal" /><small style="color:var(--text-muted)">Foto lokal siap disimpan</small>`;
 
-        const gasUrl = appState.settings.gas_webapp_url;
-        if (gasUrl) {
-          showToast('Mengunggah foto ke Google Drive Desa Wuliwutik...', 'success');
+        const gasUrl = (appState.settings.gas_webapp_url || "").trim();
+        if (gasUrl.startsWith("http")) {
+          showToast("Mengunggah foto ke Google Drive Desa Wuliwutik...", "info");
           try {
-            const namaAset = document.getElementById('inp-nama').value.trim() || 'aset_wuliwutik';
+            const namaAset = (document.getElementById("inp-nama").value || "aset_wuliwutik").replace(/[^a-zA-Z0-9_-]/g, "_");
             const res = await fetch(gasUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
               body: JSON.stringify({
-                action: 'UPLOAD_PHOTO',
-                folderUrl: appState.settings.folder_gdrive_foto_url || '',
-                fileName: `${namaAset}_${Date.now()}`,
-                mimeType: file.type || 'image/jpeg',
+                action: "UPLOAD_PHOTO",
+                folderUrl: appState.settings.folder_gdrive_foto_url || "",
+                fileName: `${namaAset}_${Date.now()}.jpg`,
+                mimeType: file.type || "image/jpeg",
                 base64Data: base64Data
               })
             });
             const data = await res.json();
-            if (data.status === 'ok' && data.url) {
-              document.getElementById('inp-foto-url').value = data.url;
-              document.getElementById('detected-drive-id').textContent = data.fileId || '-';
-              showToast('Foto berhasil diunggah ke Google Drive & tautan terisi otomatis!');
-              return;
+            if (data.status === "ok" && data.url) {
+              document.getElementById("inp-foto-url").value = data.url;
+              document.getElementById("detected-drive-id").textContent = data.fileId || "-";
+              showToast("Foto berhasil diunggah ke Google Drive & tautan terisi otomatis!", "success");
             }
           } catch (err) {
-            console.error('Gagal upload ke Google Drive:', err);
-            showToast('Gagal upload ke Drive; foto disimpan sementara di pratinjau lokal.', 'warning');
-            return;
+            console.error(err);
+            showToast("Gagal unggah langsung ke Drive; pratinjau lokal tetap disimpan.", "warning");
           }
+        } else {
+          showToast("Foto lokal dimuat ke pratinjau.", "success");
         }
-
-        showToast('Foto lokal dimuat ke pratinjau (akan ikut tersimpan).', 'success');
       };
       reader.readAsDataURL(file);
     }
 
-    let pendingSubmitMode = 'list';
-    function submitFormWithMode(mode) {
-      pendingSubmitMode = mode;
-      const form = document.getElementById('asset-form');
-      if (form.reportValidity()) {
-        handleSaveAsset(new Event('submit'), mode);
-      }
-    }
-
-    function handleSaveAsset(e, mode = pendingSubmitMode) {
+    async function handleSaveAsset(e) {
       e.preventDefault();
-      const editId = document.getElementById('edit-asset-id').value;
-      const gol = document.getElementById('inp-golongan').value;
-      const meta = GOLONGAN_META[gol];
-      const [kodePengguna, namaPengguna] = document.getElementById('inp-pengguna').value.split('|');
-      const gdriveUrl = document.getElementById('inp-foto-url').value.trim();
+      const editId = document.getElementById("edit-asset-id").value;
+      const gol = document.getElementById("inp-golongan").value;
+      const meta = GOLONGAN_META[gol] || GOLONGAN_META["3"];
+      const [kodePengguna, namaPengguna] = document.getElementById("inp-pengguna").value.split("|");
+      const gdriveUrl = document.getElementById("inp-foto-url").value.trim();
       const gdriveFileId = extractGoogleDriveId(gdriveUrl);
+      const prevAsset = editId ? appState.assets.find((x) => x.id_aset === editId) : null;
 
       const assetObj = {
-        id_aset: editId || 'AST-WWT-' + String(Date.now()).slice(-6),
+        id_aset: editId || "AST-WWT-" + String(Date.now()).slice(-6),
         golongan: gol,
-        kode_barang: document.getElementById('inp-kode-barang').value.trim(),
-        kode_lokasi: appState.settings.kode_lokasi_10_digit || '53.07.04.2006',
+        kode_barang: document.getElementById("inp-kode-barang").value.trim(),
+        kode_lokasi: appState.settings.kode_lokasi_10_digit,
         kode_pengguna: kodePengguna,
         nama_pengguna_barang: namaPengguna,
-        tahun_perolehan: document.getElementById('inp-tahun').value.trim(),
-        no_urut_pendaftaran: String(document.getElementById('inp-nourut').value || '1').padStart(6, '0'),
-        kelompok_juknis: meta.nama,
-        sub_jenis_aset: document.getElementById('inp-subjenis').value,
+        tahun_perolehan: String(document.getElementById("inp-tahun").value).trim(),
+        no_urut_pendaftaran: String(document.getElementById("inp-nourut").value).padStart(6, "0"),
+        kelompok_juknis: meta.name,
+        sub_jenis_aset: document.getElementById("inp-subjenis").value,
         kategori_kib: meta.kib,
-        nama_aset: document.getElementById('inp-nama').value.trim(),
-        merk_tipe_spesifikasi: document.getElementById('inp-spesifikasi').value.trim(),
-        jumlah_luas_volume: Number(document.getElementById('inp-jumlah').value) || 1,
-        satuan: document.getElementById('inp-satuan').value.trim(),
-        asal_usul: document.getElementById('inp-asal').value,
-        tanggal_perolehan: document.getElementById('inp-tanggal').value,
-        nilai_perolehan: Number(document.getElementById('inp-nilai').value) || 0,
-        metode_penilaian: document.getElementById('inp-metode-nilai').value,
-        kondisi: document.getElementById('inp-kondisi').value,
-        lokasi_fisik_ruangan: document.getElementById('inp-lokasi-fisik').value.trim(),
-        penanggung_jawab: document.getElementById('inp-pj').value.trim(),
-        status_dokumen: document.getElementById('inp-status-dokumen').value,
-        no_dokumen_ba: document.getElementById('inp-nodokumen').value.trim(),
-        catatan_klarifikasi_calk: document.getElementById('inp-catatan').value.trim(),
-        status_label: document.getElementById('inp-status-label').value,
+        nama_aset: document.getElementById("inp-nama").value.trim(),
+        merk_tipe_spesifikasi: document.getElementById("inp-spesifikasi").value.trim(),
+        jumlah_luas_volume: Number(document.getElementById("inp-jumlah").value) || 1,
+        satuan: document.getElementById("inp-satuan").value.trim(),
+        asal_usul: document.getElementById("inp-asal").value,
+        tanggal_perolehan: document.getElementById("inp-tanggal").value,
+        nilai_perolehan: Number(document.getElementById("inp-nilai").value) || 0,
+        nilai_wajar_taksiran: Number(document.getElementById("inp-nilai-wajar").value) || 0,
+        metode_penilaian: document.getElementById("inp-metode-nilai").value,
+        kondisi: document.getElementById("inp-kondisi").value,
+        lokasi_fisik_ruangan: document.getElementById("inp-lokasi-fisik").value.trim(),
+        penanggung_jawab: document.getElementById("inp-pj").value.trim(),
+        status_dokumen: document.getElementById("inp-status-dokumen").value,
+        no_dokumen_ba: document.getElementById("inp-nodokumen").value.trim(),
+        catatan_klarifikasi_calk: document.getElementById("inp-catatan").value.trim(),
+        status_label: document.getElementById("inp-status-label").value,
         foto_gdrive_url: gdriveUrl,
         foto_gdrive_file_id: gdriveFileId,
-        foto_thumbnail_url: appState.tempUploadedPhotoBase64 || (editId ? (appState.assets.find(x => x.id_aset === editId)?.foto_thumbnail_url || '') : ''),
+        foto_thumbnail_url: tempUploadedPhotoBase64 || (prevAsset ? prevAsset.foto_thumbnail_url : ""),
         tanggal_update: new Date().toISOString().slice(0, 10)
       };
 
       if (editId) {
-        const idx = appState.assets.findIndex(a => a.id_aset === editId);
+        const idx = appState.assets.findIndex((a) => a.id_aset === editId);
         if (idx !== -1) appState.assets[idx] = assetObj;
-        showToast(`Data aset "${assetObj.nama_aset}" berhasil diperbarui!`);
+        showToast(`Data aset "${assetObj.nama_aset}" diperbarui.`, "success");
       } else {
         appState.assets.unshift(assetObj);
-        showToast(`Aset baru "${assetObj.nama_aset}" berhasil dicatat!`);
+        showToast(`Aset "${assetObj.nama_aset}" berhasil ditambahkan.`, "success");
       }
 
       saveStateToStorage();
-      if (appState.settings.gas_webapp_url) {
-        syncWithGoogleSheets();
+      await pushActionToGas({ action: editId ? "UPDATE_ASSET" : "ADD_ASSET", asset: assetObj });
+
+      if (pendingSubmitMode === "again") {
+        openInputView(null);
+      } else {
+        switchView("inventory");
       }
-      pendingSubmitMode = 'list';
-... existing code ...
-      appState.assets = appState.assets.filter(a => !appState.selectedForDeletion.has(a.id_aset));
-      appState.selectedForDeletion.clear();
-      document.getElementById('del-nosk').value = '';
-      document.getElementById('del-alasan').value = '';
+    }
+
+    /* ================= DELETION VIEW ================= */
+    function renderDeletionView() {
+      const activeRows = appState.assets.map((a) => {
+        const checked = selectedDeleteIds.has(a.id_aset) ? "checked" : "";
+        return `
+          <tr>
+            <td><input type="checkbox" ${checked} onchange="toggleDeleteSelection('${a.id_aset}', this.checked)" /></td>
+            <td><strong>${escapeHtml(a.kode_barang)}</strong><br/><small style="color:var(--text-muted)">${escapeHtml(a.kode_lokasi)} • ${escapeHtml(String(a.no_urut_pendaftaran).padStart(6, "0"))}</small></td>
+            <td><strong>${escapeHtml(a.nama_aset)}</strong><br/><small style="color:var(--text-muted)">${escapeHtml(a.kelompok_juknis)} (${escapeHtml(a.kategori_kib)})</small></td>
+            <td>${escapeHtml(a.kondisi)}</td>
+            <td><strong>${formatRupiah(getAssetEffectiveValue(a))}</strong></td>
+            <td><button class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')">Hapus</button></td>
+          </tr>
+        `;
+      }).join("");
+
+      const historyRows = appState.deletedAssets.map((h, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${escapeHtml(h.tanggal_penghapusan)}</td>
+          <td><strong>${escapeHtml(h.nama_aset)}</strong><br/><small style="color:var(--text-muted)">Kode: ${escapeHtml(h.kode_barang)} • Urut: ${escapeHtml(h.no_urut_pendaftaran || "-")}</small></td>
+          <td><span class="status-badge st-berat">${escapeHtml(h.jenis_penghapusan)}</span></td>
+          <td>${escapeHtml(h.no_sk_ba_dokumen || "-")}<br/><small style="color:var(--text-muted)">${escapeHtml(h.alasan_keterangan)}</small></td>
+          <td><strong>${formatRupiah(h.nilai_aset_terakhir)}</strong></td>
+          <td><button class="btn btn-light btn-sm" onclick="restoreDeletedAsset('${h.id_log_hapus}')">↩️ Pulihkan</button></td>
+        </tr>
+      `).join("");
+
+      return `
+        <div class="section-head">
+          <div>
+            <h2>Penghapusan & Arsip Inventaris Aset</h2>
+            <p>Setiap penghapusan aset aktif akan tercatat ke log riwayat (<code>Riwayat_Penghapusan</code>) dan dapat dipulihkan bila terjadi kekeliruan.</p>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="openBulkDeleteModal()" ${selectedDeleteIds.size === 0 ? "disabled" : ""}>
+            🗑️ Hapus Terpilih (${selectedDeleteIds.size})
+          </button>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header">
+            <h3>Daftar Aset Aktif Siap Diproses Penghapusan</h3>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:36px;">Pilih</th>
+                  <th>Kode Barang & Lokasi</th>
+                  <th>Nama & Golongan Aset</th>
+                  <th>Kondisi</th>
+                  <th>Nilai Aset</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${activeRows || `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">Tidak ada aset aktif.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Riwayat / Arsip Penghapusan Inventaris (${appState.deletedAssets.length})</h3>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tanggal</th>
+                  <th>Nama & Kode Aset</th>
+                  <th>Jenis Penghapusan</th>
+                  <th>No. Dokumen & Alasan</th>
+                  <th>Nilai Terakhir</th>
+                  <th>Pulihkan</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${historyRows || `<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted)">Belum ada riwayat penghapusan aset.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleDeleteSelection(id, checked) {
+      if (checked) selectedDeleteIds.add(id);
+      else selectedDeleteIds.delete(id);
+      renderCurrentView();
+    }
+
+    function openSingleDeleteModal(id) {
+      selectedDeleteIds = new Set([id]);
+      openBulkDeleteModal();
+    }
+
+    function openBulkDeleteModal() {
+      const targets = appState.assets.filter((a) => selectedDeleteIds.has(a.id_aset));
+      if (!targets.length) return;
+      const listHtml = targets.map((t) => `<li><strong>${escapeHtml(t.nama_aset)}</strong> (${escapeHtml(t.kode_barang)}) — ${formatRupiah(getAssetEffectiveValue(t))}</li>`).join("");
+
+      const modal = document.getElementById("delete-modal");
+      document.getElementById("delete-modal-body").innerHTML = `
+        <h3 style="margin-bottom:10px;color:var(--danger);">Konfirmasi Penghapusan Inventaris (${targets.length} Item)</h3>
+        <ul style="margin:0 0 14px 18px;font-size:13px;">${listHtml}</ul>
+        <form onsubmit="confirmDeleteAssets(event)">
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Jenis Penghapusan *</label>
+            <select class="form-control" id="del-jenis" required>
+              <option value="Penghapusan Aset Rusak Berat / Tidak Terpakai">Penghapusan Aset Rusak Berat / Tidak Terpakai</option>
+              <option value="Barang Hilang / Tidak Ditemukan">Barang Hilang / Tidak Ditemukan</option>
+              <option value="Pemindahtanganan / Hibah / Penyerahan">Pemindahtanganan / Hibah / Penyerahan</option>
+              <option value="Koreksi Salah Input / Duplikasi">Koreksi Salah Input / Duplikasi</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Nomor SK / Berita Acara / Dokumen Pendukung</label>
+            <input type="text" class="form-control" id="del-nodok" placeholder="Contoh: BA-HAPUS-01/WWT/2026" />
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Alasan / Keterangan Penghapusan *</label>
+            <textarea rows="2" class="form-control" id="del-alasan" required placeholder="Jelaskan alasan penghapusan aset..."></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:16px;">
+            <label>Diproses Oleh</label>
+            <input type="text" class="form-control" id="del-petugas" value="${escapeAttr(appState.settings.nama_pengurus_aset)}" />
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;">
+            <button type="button" class="btn btn-light" onclick="closeModal('delete-modal')">Batal</button>
+            <button type="submit" class="btn btn-danger">Ya, Hapus & Arsipkan</button>
+          </div>
+        </form>
+      `;
+      modal.classList.add("open");
+    }
+
+    async function confirmDeleteAssets(e) {
+      e.preventDefault();
+      const jenis = document.getElementById("del-jenis").value;
+      const nodok = document.getElementById("del-nodok").value.trim();
+      const alasan = document.getElementById("del-alasan").value.trim();
+      const petugas = document.getElementById("del-petugas").value.trim();
+      const today = new Date().toISOString().slice(0, 10);
+
+      const toDelete = appState.assets.filter((a) => selectedDeleteIds.has(a.id_aset));
+      const logs = toDelete.map((a) => ({
+        id_log_hapus: "DEL-" + String(Date.now()).slice(-6) + "-" + a.id_aset.slice(-3),
+        id_aset_dihapus: a.id_aset,
+        kode_barang: a.kode_barang,
+        no_urut_pendaftaran: a.no_urut_pendaftaran,
+        nama_aset: a.nama_aset,
+        kelompok_juknis: a.kelompok_juknis,
+        kategori_kib: a.kategori_kib,
+        nilai_aset_terakhir: getAssetEffectiveValue(a),
+        jenis_penghapusan: jenis,
+        no_sk_ba_dokumen: nodok,
+        alasan_keterangan: alasan,
+        dihapus_oleh: petugas,
+        tanggal_penghapusan: today,
+        snapshot_json_aset: JSON.stringify(a)
+      }));
+
+      appState.deletedAssets = [...logs, ...appState.deletedAssets];
+      appState.assets = appState.assets.filter((a) => !selectedDeleteIds.has(a.id_aset));
+      selectedDeleteIds.clear();
 
       saveStateToStorage();
-      if (appState.settings.gas_webapp_url) {
-        syncWithGoogleSheets();
-      }
-      closeModal('delete-confirm-modal');
-      renderDeletionCandidates();
-      renderDeletionHistory();
-      showToast(`${selectedAssets.length} aset berhasil dihapus & dicatat ke Riwayat Penghapusan.`);
+      closeModal("delete-modal");
+      showToast(`${logs.length} aset dipindahkan ke Riwayat Penghapusan.`, "success");
+      await pushActionToGas({ action: "DELETE_ASSETS", logs });
+      renderCurrentView();
     }
-... existing code ...
-    function saveBaLogChanges() {
-      if (!appState.baLogs[0]) appState.baLogs[0] = { ...SEED_BA_LOGS[0] };
-      appState.baLogs[0].nomor_ba = document.getElementById('ba-edit-noba').value;
-      appState.baLogs[0].nomor_sptjm = document.getElementById('ba-edit-nosptjm').value;
-      appState.baLogs[0].ringkasan_temuan = document.getElementById('ba-edit-ringkasan').value;
-      appState.baLogs[0].tindak_lanjut_catatan = document.getElementById('ba-edit-tindak').value;
+
+    async function restoreDeletedAsset(logId) {
+      const idx = appState.deletedAssets.findIndex((h) => h.id_log_hapus === logId);
+      if (idx === -1) return;
+      const item = appState.deletedAssets[idx];
+      try {
+        const restored = JSON.parse(item.snapshot_json_aset);
+        appState.assets.unshift(restored);
+        appState.deletedAssets.splice(idx, 1);
+        saveStateToStorage();
+        showToast(`Aset "${restored.nama_aset}" berhasil dipulihkan ke daftar aktif.`, "success");
+        await pushActionToGas({ action: "RESTORE_ASSET", id_log_hapus: logId, asset: restored });
+        renderCurrentView();
+      } catch (err) {
+        showToast("Gagal memulihkan data snapshot aset.", "error");
+      }
+    }
+
+    /* ================= REPORTS VIEW (JUKNIS 3.2.3) ================= */
+    function renderReportsView() {
+      let bodyHtml = "";
+      if (currentReportTab === "buku") {
+        bodyHtml = renderBukuInventarisPaper();
+      } else if (currentReportTab === "ba") {
+        bodyHtml = renderBeritaAcaraPaper();
+      } else if (currentReportTab === "kekayaan") {
+        bodyHtml = renderKekayaanDesaPaper();
+      } else if (currentReportTab === "calk") {
+        bodyHtml = renderCalkPaper();
+      }
+
+      return `
+        <div class="section-head">
+          <div>
+            <h2>Laporan Inventaris Sesuai Juknis Kabupaten Sikka (2025)</h2>
+            <p>Buku Inventaris, Berita Acara & SPTJM, Laporan Kekayaan Milik Desa, serta Daftar Aset Tanpa Nilai (CaLK).</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="window.print()">🖨️ Cetak Laporan Resmi</button>
+            <button class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor CSV</button>
+          </div>
+        </div>
+
+        <div class="subtabs">
+          <button class="subtab-btn ${currentReportTab === "buku" ? "active" : ""}" onclick="currentReportTab='buku';renderCurrentView();">1. Buku Inventaris Aset Desa</button>
+          <button class="subtab-btn ${currentReportTab === "ba" ? "active" : ""}" onclick="currentReportTab='ba';renderCurrentView();">2. Berita Acara & SPTJM</button>
+          <button class="subtab-btn ${currentReportTab === "kekayaan" ? "active" : ""}" onclick="currentReportTab='kekayaan';renderCurrentView();">3. Kekayaan Milik Desa (Per Golongan)</button>
+          <button class="subtab-btn ${currentReportTab === "calk" ? "active" : ""}" onclick="currentReportTab='calk';renderCurrentView();">4. Aset Tanpa Nilai (CaLK) & Tindak Lanjut</button>
+        </div>
+
+        ${bodyHtml}
+      `;
+    }
+
+    function renderKopSurat(judulLaporan) {
+      const s = appState.settings;
+      return `
+        <div class="kop-surat">
+          <h4>PEMERINTAH KABUPATEN ${escapeHtml(s.kabupaten.toUpperCase())}</h4>
+          <h4>KECAMATAN ${escapeHtml(s.kecamatan.toUpperCase())}</h4>
+          <h3>PEMERINTAH ${escapeHtml(s.nama_desa.toUpperCase())}</h3>
+          <p>Kode Lokasi Wilayah: <strong>${escapeHtml(s.kode_lokasi_10_digit)}</strong> • Tahun Inventarisasi: <strong>${escapeHtml(s.tahun_inventarisasi_aktif)}</strong></p>
+          <h4 style="margin-top:10px;color:#4c1d95;">${escapeHtml(judulLaporan)}</h4>
+        </div>
+      `;
+    }
+
+    function renderTtdBlok() {
+      const s = appState.settings;
+      return `
+        <div class="ttd-grid">
+          <div class="ttd-box">
+            <p>Mengetahui / Menyetujui,<br/><strong>Sekretaris Desa ${escapeHtml(s.nama_desa)}</strong></p>
+            <div class="ttd-space"></div>
+            <strong><u>${escapeHtml(s.nama_sekretaris_desa)}</u></strong>
+          </div>
+          <div class="ttd-box">
+            <p>Disusun oleh,<br/><strong>Petugas/Pengurus Aset & Tim Inventarisasi</strong></p>
+            <div class="ttd-space"></div>
+            <strong><u>${escapeHtml(s.nama_pengurus_aset)}</u></strong>
+          </div>
+          <div class="ttd-box" style="grid-column: 1 / -1;">
+            <p>Disampaikan kepada,<br/><strong>Kepala Desa ${escapeHtml(s.nama_desa)}</strong></p>
+            <div class="ttd-space"></div>
+            <strong><u>${escapeHtml(s.nama_kepala_desa)}</u></strong>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBukuInventarisPaper() {
+      const rows = appState.assets.map((a, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td><strong>${escapeHtml(a.kode_barang)}</strong><br/><small>${escapeHtml(a.kode_lokasi)} • ${escapeHtml(a.kode_pengguna)} • ${escapeHtml(a.tahun_perolehan)} • ${escapeHtml(String(a.no_urut_pendaftaran).padStart(6, "0"))}</small></td>
+          <td><strong>${escapeHtml(a.nama_aset)}</strong><br/><small>${escapeHtml(a.merk_tipe_spesifikasi || "-")}</small></td>
+          <td>${escapeHtml(a.kelompok_juknis)} (${escapeHtml(a.kategori_kib)})</td>
+          <td>${Number(a.jumlah_luas_volume || 0).toLocaleString("id-ID")} ${escapeHtml(a.satuan)}</td>
+          <td>${escapeHtml(a.asal_usul)} (${escapeHtml(a.tanggal_perolehan || "-")})</td>
+          <td>${escapeHtml(a.kondisi)}</td>
+          <td>${escapeHtml(a.lokasi_fisik_ruangan)}</td>
+          <td><strong>${formatRupiah(getAssetEffectiveValue(a))}</strong><br/><small>${escapeHtml(a.metode_penilaian)}</small></td>
+        </tr>
+      `).join("");
+
+      const totalNilai = appState.assets.reduce((s, a) => s + getAssetEffectiveValue(a), 0);
+
+      return `
+        <div class="report-paper">
+          ${renderKopSurat("BUKU INVENTARIS ASET DESA")}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Kode Barang & Register</th>
+                  <th>Nama & Spesifikasi Aset</th>
+                  <th>Golongan / KIB</th>
+                  <th>Jumlah/Luas</th>
+                  <th>Asal-Usul & Tgl</th>
+                  <th>Kondisi</th>
+                  <th>Lokasi</th>
+                  <th>Nilai Aset</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+                <tr style="background:#f8f7ff;font-weight:800;">
+                  <td colspan="8" style="text-align:right;">TOTAL NILAI BUKU INVENTARIS</td>
+                  <td>${formatRupiah(totalNilai)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          ${renderTtdBlok()}
+        </div>
+      `;
+    }
+
+    function renderBeritaAcaraPaper() {
+      const ba = appState.baLogs[0] || {};
+      const totalItems = appState.assets.length;
+      const totalNilai = appState.assets.reduce((s, a) => s + getAssetEffectiveValue(a), 0);
+      const s = appState.settings;
+
+      return `
+        <div class="report-paper">
+          ${renderKopSurat("BERITA ACARA & SURAT PERNYATAAN TANGGUNG JAWAB KEBENARAN HASIL INVENTARISASI ASET DESA")}
+          <p style="font-size:13.5px;margin-bottom:14px;">
+            Pada hari ini, tanggal <strong>${escapeHtml(ba.tanggal_ba || "2026-02-20")}</strong> (Nomor BA: <strong>${escapeHtml(ba.nomor_ba || "-")}</strong>), bertempat di Kantor ${escapeHtml(s.nama_desa)}, Kecamatan ${escapeHtml(s.kecamatan)}, Kabupaten ${escapeHtml(s.kabupaten)}, Tim Inventarisasi Aset Desa dan Petugas/Pengurus Barang Milik Desa telah menyelesaikan inventarisasi aset desa dengan Kode Lokasi <strong>${escapeHtml(s.kode_lokasi_10_digit)}</strong>.
+          </p>
+          <p style="font-size:13.5px;margin-bottom:14px;">
+            <strong>Ringkasan Hasil Inventarisasi:</strong> ${escapeHtml(ba.ringkasan_temuan || "-")}
+          </p>
+          <p style="font-size:13.5px;margin-bottom:14px;">
+            <strong>Surat Pernyataan Tanggung Jawab Kebenaran (No. SPTJM: ${escapeHtml(ba.nomor_sptjm || "-")}):</strong> Tim Inventarisasi Aset Desa dan Petugas/Pengurus Barang Milik Desa bertanggung jawab penuh atas kebenaran materiil data hasil inventarisasi sebanyak <strong>${totalItems} item</strong> dengan total nilai tercatat <strong>${formatRupiah(totalNilai)}</strong>.
+          </p>
+          <p style="font-size:13.5px;margin-bottom:18px;">
+            <strong>Tindak Lanjut:</strong> ${escapeHtml(ba.tindak_lanjut_catatan || "-")}
+          </p>
+          ${renderTtdBlok()}
+        </div>
+      `;
+    }
+
+    function renderKekayaanDesaPaper() {
+      let grandTotalItem = 0;
+      let grandBaik = 0;
+      let grandRingan = 0;
+      let grandBerat = 0;
+      let grandNilai = 0;
+
+      const rows = Object.entries(GOLONGAN_META).map(([gol, meta]) => {
+        const list = appState.assets.filter((a) => String(a.golongan) === gol);
+        const totalItem = list.length;
+        const baik = list.filter((a) => a.kondisi === "Baik").length;
+        const ringan = list.filter((a) => a.kondisi === "Rusak Ringan").length;
+        const berat = list.filter((a) => a.kondisi === "Rusak Berat").length;
+        const nilai = list.reduce((s, a) => s + getAssetEffectiveValue(a), 0);
+
+        grandTotalItem += totalItem;
+        grandBaik += baik;
+        grandRingan += ringan;
+        grandBerat += berat;
+        grandNilai += nilai;
+
+        return `
+          <tr>
+            <td>Gol. ${gol} (${escapeHtml(meta.kib)})</td>
+            <td><strong>${escapeHtml(meta.name)}</strong></td>
+            <td>${totalItem}</td>
+            <td>${baik}</td>
+            <td>${ringan}</td>
+            <td>${berat}</td>
+            <td><strong>${formatRupiah(nilai)}</strong></td>
+          </tr>
+        `;
+      }).join("");
+
+      return `
+        <div class="report-paper">
+          ${renderKopSurat("LAPORAN KEKAYAAN MILIK DESA PER GOLONGAN (FORMAT SISKEUDES)")}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Golongan / KIB</th>
+                  <th>Uraian Golongan Aset Desa</th>
+                  <th>Jumlah Item</th>
+                  <th>Baik</th>
+                  <th>Rusak Ringan</th>
+                  <th>Rusak Berat</th>
+                  <th>Total Nilai Aset</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+                <tr style="background:#f8f7ff;font-weight:800;">
+                  <td colspan="2">TOTAL KESELURUHAN KEKAYAAN MILIK DESA</td>
+                  <td>${grandTotalItem}</td>
+                  <td>${grandBaik}</td>
+                  <td>${grandRingan}</td>
+                  <td>${grandBerat}</td>
+                  <td>${formatRupiah(grandNilai)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          ${renderTtdBlok()}
+        </div>
+      `;
+    }
+
+    function renderCalkPaper() {
+      const noValAssets = appState.assets.filter(
+        (a) => a.metode_penilaian === "Belum Dinilai / CaLK" || a.status_dokumen === "Belum Ada Nilai" || getAssetEffectiveValue(a) === 0
+      );
+
+      const rows = noValAssets.map((a, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td><strong>${escapeHtml(a.kode_barang)}</strong></td>
+          <td><strong>${escapeHtml(a.nama_aset)}</strong><br/><small>${escapeHtml(a.kelompok_juknis)} • ${escapeHtml(a.kondisi)}</small></td>
+          <td>${escapeHtml(a.status_dokumen)}</td>
+          <td>${escapeHtml(a.catatan_klarifikasi_calk || "Dicatat pada daftar tersendiri & dijelaskan pada CaLK untuk penilaian tahun berikutnya.")}</td>
+        </tr>
+      `).join("");
+
+      return `
+        <div class="report-paper">
+          ${renderKopSurat("DAFTAR ASET TANPA NILAI (CATATAN ATAS LAPORAN KEUANGAN DESA / CaLK)")}
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
+            Sesuai Juknis Bab III (3.2.3), aset yang belum dapat disajikan nilainya dicatat dalam daftar tersendiri dan diberi penjelasan pada Catatan Atas Laporan Keuangan Desa (CaLK) serta dilakukan penilaian pada tahun berikutnya.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Kode Barang</th>
+                  <th>Nama & Uraian Aset</th>
+                  <th>Status Dokumen</th>
+                  <th>Penjelasan pada CaLK / Tindak Lanjut</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows || `<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted)">Seluruh aset aktif telah memiliki nilai tercatat.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+          ${renderTtdBlok()}
+        </div>
+      `;
+    }
+
+    /* ================= SETTINGS & GOOGLE APPS SCRIPT VIEW ================= */
+    function renderSettingsView() {
+      const s = appState.settings;
+      const gasCode = getGoogleAppsScriptCode();
+
+      return `
+        <div class="section-head">
+          <div>
+            <h2>Pengaturan Wilayah, Google Sheets & Kode Google Apps Script</h2>
+            <p>Hubungkan dashboard ini dengan Google Sheets & Google Drive Desa Wuliwutik (Kode Lokasi: <strong>53.07.04.2006</strong>).</p>
+          </div>
+        </div>
+
+        <form class="card" style="margin-bottom:20px;" onsubmit="saveSettingsForm(event)">
+          <h3 style="margin-bottom:14px;">Konfigurasi Wilayah & Koneksi Google Sheets</h3>
+          <div class="form-grid-3" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Kode Provinsi (2 Digit)</label>
+              <input type="text" class="form-control" id="set-prov" value="${escapeAttr(s.kode_provinsi)}" />
+            </div>
+            <div class="form-group">
+              <label>Kode Kabupaten (2 Digit)</label>
+              <input type="text" class="form-control" id="set-kab" value="${escapeAttr(s.kode_kabupaten)}" />
+            </div>
+            <div class="form-group">
+              <label>Kode Kecamatan Nita (2 Digit)</label>
+              <input type="text" class="form-control" id="set-kec" value="${escapeAttr(s.kode_kecamatan)}" />
+            </div>
+          </div>
+
+          <div class="form-grid-3" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>Kode Status Desa (1 Digit)</label>
+              <input type="text" class="form-control" id="set-st" value="${escapeAttr(s.kode_status_desa)}" />
+            </div>
+            <div class="form-group">
+              <label>No. Urut Desa Wuliwutik (3 Digit)</label>
+              <input type="text" class="form-control" id="set-urut" value="${escapeAttr(s.no_urut_desa)}" />
+            </div>
+            <div class="form-group">
+              <label>Tahun Inventarisasi Aktif</label>
+              <input type="text" class="form-control" id="set-tahun" value="${escapeAttr(s.tahun_inventarisasi_aktif)}" />
+            </div>
+          </div>
+
+          <div class="form-grid-2" style="margin-bottom:14px;">
+            <div class="form-group">
+              <label>URL Web App Google Apps Script (/exec)</label>
+              <input type="text" class="form-control" id="set-gas-url" placeholder="https://script.google.com/macros/s/.../exec" value="${escapeAttr(s.gas_webapp_url)}" />
+            </div>
+            <div class="form-group">
+              <label>URL atau Folder ID Google Drive Dokumentasi Foto</label>
+              <input type="text" class="form-control" id="set-folder-url" placeholder="https://drive.google.com/drive/folders/..." value="${escapeAttr(s.folder_gdrive_foto_url)}" />
+            </div>
+          </div>
+
+          <div class="form-grid-2" style="margin-bottom:16px;">
+            <div class="form-group">
+              <label>Nama Kepala Desa</label>
+              <input type="text" class="form-control" id="set-kades" value="${escapeAttr(s.nama_kepala_desa)}" />
+            </div>
+            <div class="form-group">
+              <label>Nama Sekretaris Desa</label>
+              <input type="text" class="form-control" id="set-sekdes" value="${escapeAttr(s.nama_sekretaris_desa)}" />
+            </div>
+            <div class="form-group">
+              <label>Nama Petugas / Pengurus Aset Desa</label>
+              <input type="text" class="form-control" id="set-pengurus" value="${escapeAttr(s.nama_pengurus_aset)}" />
+            </div>
+            <div class="form-group">
+              <label>Nama Ketua Tim Inventarisasi</label>
+              <input type="text" class="form-control" id="set-ketua-tim" value="${escapeAttr(s.nama_ketua_tim_inventarisasi)}" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button type="submit" class="btn btn-primary">💾 Simpan Pengaturan</button>
+            <button type="button" class="btn btn-soft-purple" onclick="syncFromGoogleSheets()">🔄 Tarik Data dari Google Sheets</button>
+          </div>
+        </form>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Kode Lengkap Google Apps Script (<code>Code.gs</code>)</h3>
+            <button class="btn btn-light btn-sm" onclick="copyGasCode()">📋 Salin Code.gs</button>
+          </div>
+          <pre class="code-block" id="gas-code-pre">${escapeHtml(gasCode)}</pre>
+        </div>
+      `;
+    }
+
+    function saveSettingsForm(e) {
+      e.preventDefault();
+      appState.settings.kode_provinsi = document.getElementById("set-prov").value.trim() || "53";
+      appState.settings.kode_kabupaten = document.getElementById("set-kab").value.trim() || "07";
+      appState.settings.kode_kecamatan = document.getElementById("set-kec").value.trim() || "04";
+      appState.settings.kode_status_desa = document.getElementById("set-st").value.trim() || "2";
+      appState.settings.no_urut_desa = document.getElementById("set-urut").value.trim() || "006";
+      appState.settings.kode_lokasi_10_digit = buildKodeLokasiFromSettings(appState.settings);
+      appState.settings.tahun_inventarisasi_aktif = document.getElementById("set-tahun").value.trim() || "2026";
+      appState.settings.gas_webapp_url = document.getElementById("set-gas-url").value.trim();
+      appState.settings.folder_gdrive_foto_url = document.getElementById("set-folder-url").value.trim();
+      appState.settings.nama_kepala_desa = document.getElementById("set-kades").value.trim();
+      appState.settings.nama_sekretaris_desa = document.getElementById("set-sekdes").value.trim();
+      appState.settings.nama_pengurus_aset = document.getElementById("set-pengurus").value.trim();
+      appState.settings.nama_ketua_tim_inventarisasi = document.getElementById("set-ketua-tim").value.trim();
+
       saveStateToStorage();
-      if (appState.settings.gas_webapp_url) {
-        syncWithGoogleSheets();
-      }
-      renderActiveReportTab();
-      showToast('Narasi Berita Acara & SPTJM berhasil disimpan!');
+      showToast("Pengaturan wilayah & Google Sheets berhasil disimpan.", "success");
+      renderCurrentView();
     }
-... existing code ...
+
+    async function syncFromGoogleSheets() {
+      const gasUrl = (appState.settings.gas_webapp_url || "").trim();
+      if (!gasUrl.startsWith("http")) {
+        showToast("URL Google Apps Script belum diisi. Menggunakan data lokal/pratinjau.", "warning");
+        return;
+      }
+      showToast("Menyinkronkan data dari Google Sheets...", "info");
+      try {
+        const res = await fetch(`${gasUrl}?action=GET_ALL`);
+        const data = await res.json();
+        if (data.status === "ok") {
+          if (Array.isArray(data.assets)) appState.assets = data.assets;
+          if (Array.isArray(data.deletedAssets)) appState.deletedAssets = data.deletedAssets;
+          if (Array.isArray(data.baLogs) && data.baLogs.length) appState.baLogs = data.baLogs;
+          saveStateToStorage();
+          showToast("Sinkronisasi dari Google Sheets berhasil.", "success");
+          renderCurrentView();
+        } else {
+          showToast("Respons sheet tidak sesuai format.", "error");
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Gagal terhubung ke Google Sheets. Periksa deployment Web App.", "error");
+      }
+    }
+
+    async function pushActionToGas(payload) {
+      const gasUrl = (appState.settings.gas_webapp_url || "").trim();
+      if (!gasUrl.startsWith("http")) return;
+      try {
+        await fetch(gasUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.error("GAS push error:", err);
+      }
+    }
+
+    /* ================= MODAL DETAIL & LABEL ================= */
+    function openDetailModal(id) {
+      const a = appState.assets.find((x) => x.id_aset === id);
+      if (!a) return;
+      const photoUrl = getPhotoDisplayUrl(a);
+      const modal = document.getElementById("detail-modal");
+      document.getElementById("detail-modal-body").innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <h3>Detail & Label Registrasi Aset</h3>
+          <button class="btn btn-light btn-sm" onclick="closeModal('detail-modal')">✕</button>
+        </div>
+
+        <div style="border:2px solid #4c1d95;border-radius:12px;padding:14px;background:#faf9ff;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:800;color:#4c1d95;">LABEL REGISTRASI ASET • PEMERINTAH DESA WULIWTIK (${escapeHtml(a.status_label)})</div>
+          <div style="font-size:15px;font-weight:800;margin:4px 0;">${escapeHtml(a.nama_aset)}</div>
+          <div class="reg-stacked" style="margin-top:6px;">
+            <div class="reg-top">LOKASI: ${escapeHtml(a.kode_lokasi)} | PENGGUNA: ${escapeHtml(a.kode_pengguna)} | TAHUN: ${escapeHtml(a.tahun_perolehan)}</div>
+            <div class="reg-bot">KODE BARANG: ${escapeHtml(a.kode_barang)} | NO. URUT: ${escapeHtml(String(a.no_urut_pendaftaran).padStart(6, "0"))}</div>
+          </div>
+          <div style="font-size:12px;color:#475569;margin-top:8px;">Lokasi Fisik: ${escapeHtml(a.lokasi_fisik_ruangan)} • Kondisi: <strong>${escapeHtml(a.kondisi)}</strong></div>
+        </div>
+
+        ${photoUrl ? `<div style="margin-bottom:14px;text-align:center;"><img src="${escapeAttr(photoUrl)}" style="max-height:240px;max-width:100%;border-radius:10px;" alt="Foto Aset" /></div>` : ""}
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;">
+          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Cetak Label</button>
+          <button class="btn btn-light btn-sm" onclick="closeModal('detail-modal')">Tutup</button>
+        </div>
+      `;
+      modal.classList.add("open");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function closeModalOnBackdrop(event, id) {
+      if (event.target.id === id) closeModal(id);
+    }
+
+    function exportAssetsCsv() {
+      const headers = [
+        "id_aset", "kode_barang", "kode_lokasi", "kode_pengguna", "nama_pengguna_barang",
+        "tahun_perolehan", "no_urut_pendaftaran", "kelompok_juknis", "sub_jenis_aset",
+        "kategori_kib", "nama_aset", "merk_tipe_spesifikasi", "jumlah_luas_volume",
+        "satuan", "asal_usul", "tanggal_perolehan", "nilai_perolehan",
+        "nilai_wajar_taksiran", "metode_penilaian", "kondisi", "lokasi_fisik_ruangan",
+        "status_dokumen", "status_label", "foto_gdrive_url"
+      ];
+      const csvLines = [
+        headers.join(","),
+        ...appState.assets.map((a) =>
+          headers.map((h) => `"${String(a[h] ?? "").replace(/"/g, '""')}"`).join(",")
+        )
+      ];
+      const blob = new Blob([csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Inventaris_Desa_Wuliwutik_5307042006_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast("File CSV inventaris berhasil diunduh.", "success");
+    }
+
+    function copyGasCode() {
+      const text = document.getElementById("gas-code-pre").textContent;
+      navigator.clipboard.writeText(text).then(() => showToast("Kode Code.gs disalin ke clipboard.", "success"));
+    }
+
+    function getGoogleAppsScriptCode() {
+      return `const SHEET_NAMES = {
+  ASSETS: "Aset_Utama",
+  DELETED: "Riwayat_Penghapusan",
+  BA: "Log_Inventarisasi_BA",
+  SETTINGS: "Pengaturan_Wilayah"
+};
+
+function doGet(e) {
+  const action = (e && e.parameter && e.parameter.action) || "GET_ALL";
+  if (action === "GET_ALL") {
+    return jsonResponse({
+      status: "ok",
+      assets: readSheetAsObjects(SHEET_NAMES.ASSETS),
+      deletedAssets: readSheetAsObjects(SHEET_NAMES.DELETED),
+      baLogs: readSheetAsObjects(SHEET_NAMES.BA)
+    });
+  }
+  return jsonResponse({ status: "ok", message: "API Inventaris Desa Wuliwutik aktif" });
+}
+
+function doPost(e) {
+  try {
+    const body = JSON.parse(e.postData.contents || "{}");
+    const action = body.action || "";
+
+    if (action === "UPLOAD_PHOTO") {
+      const folder = getTargetFolder(body.folderUrl);
+      const bytes = Utilities.base64Decode((body.base64Data || "").split(",").pop());
+      const blob = Utilities.newBlob(bytes, body.mimeType || "image/jpeg", body.fileName || "aset_wuliwutik.jpg");
+      const file = folder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      return jsonResponse({
+        status: "ok",
+        fileId: file.getId(),
+        url: file.getUrl()
+      });
+    }
+
+    if (action === "ADD_ASSET" || action === "UPDATE_ASSET") {
+      upsertRowByKey(SHEET_NAMES.ASSETS, "id_aset", body.asset);
+      return jsonResponse({ status: "ok" });
+    }
+
+    if (action === "DELETE_ASSETS") {
+      const logs = body.logs || [];
+      logs.forEach((log) => {
+        upsertRowByKey(SHEET_NAMES.DELETED, "id_log_hapus", log);
+        deleteRowByKey(SHEET_NAMES.ASSETS, "id_aset", log.id_aset_dihapus);
+      });
+      return jsonResponse({ status: "ok" });
+    }
+
+    if (action === "RESTORE_ASSET") {
+      if (body.asset) upsertRowByKey(SHEET_NAMES.ASSETS, "id_aset", body.asset);
+      if (body.id_log_hapus) deleteRowByKey(SHEET_NAMES.DELETED, "id_log_hapus", body.id_log_hapus);
+      return jsonResponse({ status: "ok" });
+    }
+
+    return jsonResponse({ status: "error", message: "Aksi tidak dikenal" });
+  } catch (err) {
+    return jsonResponse({ status: "error", message: err.message });
+  }
+}
+
+function getTargetFolder(folderUrlOrId) {
+  if (folderUrlOrId) {
+    const match = String(folderUrlOrId).match(/folders\\/([a-zA-Z0-9_-]{10,})/);
+    const id = match ? match[1] : String(folderUrlOrId).trim();
+    try { return DriveApp.getFolderById(id); } catch (e) {}
+  }
+  const iter = DriveApp.getFoldersByName("Foto_Aset_Desa_Wuliwutik");
+  return iter.hasNext() ? iter.next() : DriveApp.createFolder("Foto_Aset_Desa_Wuliwutik");
+}
+
+function readSheetAsObjects(sheetName) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName(sheetName);
+  if (!sh || sh.getLastRow() < 2) return [];
+  const data = sh.getDataRange().getValues();
+  const headers = data[0];
+  return data.slice(1).map((row) => {
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = row[i]; });
+    return obj;
+  });
+}
+
+function upsertRowByKey(sheetName, keyCol, record) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(sheetName);
+  const keys = Object.keys(record || {});
+  if (!sh) {
+    sh = ss.insertSheet(sheetName);
+    sh.appendRow(keys);
+  }
+  const headers = sh.getRange(1, 1, 1, Math.max(1, sh.getLastColumn())).getValues()[0];
+  if (!headers[0]) {
+    sh.getRange(1, 1, 1, keys.length).setValues([keys]);
+  }
+  const finalHeaders = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const keyIdx = finalHeaders.indexOf(keyCol);
+  const rowValues = finalHeaders.map((h) => record[h] ?? "");
+
+  if (keyIdx !== -1 && sh.getLastRow() > 1) {
+    const colVals = sh.getRange(2, keyIdx + 1, sh.getLastRow() - 1, 1).getValues();
+    for (let i = 0; i < colVals.length; i++) {
+      if (String(colVals[i][0]) === String(record[keyCol])) {
+        sh.getRange(i + 2, 1, 1, rowValues.length).setValues([rowValues]);
+        return;
+      }
+    }
+  }
+  sh.appendRow(rowValues);
+}
+
+function deleteRowByKey(sheetName, keyCol, keyVal) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName(sheetName);
+  if (!sh || sh.getLastRow() < 2) return;
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const keyIdx = headers.indexOf(keyCol);
+  if (keyIdx === -1) return;
+  const vals = sh.getRange(2, keyIdx + 1, sh.getLastRow() - 1, 1).getValues();
+  for (let i = vals.length - 1; i >= 0; i--) {
+    if (String(vals[i][0]) === String(keyVal)) {
+      sh.deleteRow(i + 2);
+    }
+  }
+}
+
+function jsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&")
+        .replace(/</g, "<")
+        .replace(/>/g, ">")
+        .replace(/"/g, """);
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str).replace(/'/g, "'");
+    }
+
+    renderCurrentView();
+  </script>
+</body>
+</html>
