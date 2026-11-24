@@ -52,14 +52,14 @@
 
     /* Sidebar */
     .sidebar {
-      width: 78px;
+      width: 82px;
       background: #ffffff;
       border-right: 1px solid var(--border-light);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 18px 10px;
-      gap: 14px;
+      padding: 18px 8px;
+      gap: 12px;
       position: sticky;
       top: 0;
       height: 100vh;
@@ -76,15 +76,15 @@
       display: grid;
       place-items: center;
       font-weight: 800;
-      font-size: 16px;
+      font-size: 15px;
       box-shadow: 0 8px 18px rgba(109, 40, 217, 0.28);
       margin-bottom: 6px;
       cursor: pointer;
     }
 
     .nav-btn {
-      width: 56px;
-      min-height: 50px;
+      width: 64px;
+      min-height: 54px;
       border-radius: 14px;
       border: 1px solid transparent;
       background: transparent;
@@ -100,6 +100,7 @@
       transition: all 0.18s ease;
       padding: 4px;
       text-align: center;
+      line-height: 1.15;
     }
 
     .nav-btn span.icon {
@@ -137,7 +138,7 @@
       align-items: center;
     }
 
-    /* Main Content */
+    /* Main Area */
     .main-area {
       flex: 1;
       min-width: 0;
@@ -146,7 +147,7 @@
     }
 
     .topbar {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border-light);
       padding: 12px 24px;
@@ -163,7 +164,7 @@
     .search-box {
       flex: 1;
       min-width: 240px;
-      max-width: 470px;
+      max-width: 460px;
       position: relative;
     }
 
@@ -176,7 +177,6 @@
       font-size: 13.5px;
       color: var(--text-main);
       outline: none;
-      transition: border-color 0.2s, background 0.2s;
     }
 
     .search-box input:focus {
@@ -270,8 +270,8 @@
     }
 
     .content-container {
-      padding: 22px 24px 44px;
-      max-width: 1420px;
+      padding: 22px 24px 48px;
+      max-width: 1440px;
       width: 100%;
       margin: 0 auto;
     }
@@ -292,13 +292,18 @@
       text-decoration: none;
     }
 
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .btn-primary {
       background: linear-gradient(135deg, #6d28d9, #7c3aed);
       color: #fff;
       box-shadow: 0 6px 16px rgba(109, 40, 217, 0.24);
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       background: linear-gradient(135deg, #5b21b6, #6d28d9);
     }
 
@@ -308,7 +313,7 @@
       border-color: #cbd5e1;
     }
 
-    .btn-light:hover {
+    .btn-light:hover:not(:disabled) {
       background: #f8fafc;
     }
 
@@ -318,7 +323,7 @@
       border-color: #ddd6fe;
     }
 
-    .btn-soft-purple:hover {
+    .btn-soft-purple:hover:not(:disabled) {
       background: #ddd6fe;
     }
 
@@ -327,7 +332,7 @@
       color: #fff;
     }
 
-    .btn-danger:hover {
+    .btn-danger:hover:not(:disabled) {
       background: #b91c1c;
     }
 
@@ -337,13 +342,8 @@
       border-color: #fecaca;
     }
 
-    .btn-soft-danger:hover {
+    .btn-soft-danger:hover:not(:disabled) {
       background: #fecaca;
-    }
-
-    .btn-success {
-      background: var(--success);
-      color: #fff;
     }
 
     .btn-sm {
@@ -352,7 +352,7 @@
       border-radius: 8px;
     }
 
-    /* Hero + KPI Layout */
+    /* Hero + KPI */
     .top-grid {
       display: grid;
       grid-template-columns: 1.55fr 1fr;
@@ -370,8 +370,6 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 18px;
-      position: relative;
-      overflow: hidden;
     }
 
     .hero-tag {
@@ -384,7 +382,6 @@
       border-radius: 999px;
       font-size: 11.5px;
       font-weight: 700;
-      letter-spacing: 0.3px;
       margin-bottom: 10px;
     }
 
@@ -397,8 +394,8 @@
 
     .hero-card p {
       font-size: 13.5px;
-      color: rgba(255, 255, 255, 0.9);
-      max-width: 620px;
+      color: rgba(255, 255, 255, 0.92);
+      max-width: 640px;
     }
 
     .hero-total-box {
@@ -413,13 +410,12 @@
     .hero-total-box small {
       display: block;
       font-size: 11.5px;
-      opacity: 0.88;
+      opacity: 0.9;
     }
 
     .hero-total-box strong {
       font-size: 22px;
       font-weight: 800;
-      letter-spacing: 0.2px;
     }
 
     .hero-actions {
@@ -463,7 +459,7 @@
     }
 
     .kpi-val {
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 800;
       color: var(--text-main);
     }
@@ -473,7 +469,7 @@
       color: var(--text-muted);
     }
 
-    /* Section Header */
+    /* Section Head */
     .section-head {
       display: flex;
       align-items: center;
@@ -508,7 +504,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 156px;
+      min-height: 154px;
       cursor: pointer;
       transition: transform 0.16s ease, box-shadow 0.16s ease;
       box-shadow: var(--shadow-sm);
@@ -525,8 +521,6 @@
       justify-content: space-between;
       font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.4px;
-      opacity: 0.95;
     }
 
     .cat-pill {
@@ -543,7 +537,7 @@
 
     .cat-desc {
       font-size: 11.5px;
-      opacity: 0.9;
+      opacity: 0.92;
       margin-top: 2px;
     }
 
@@ -613,7 +607,7 @@
       box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
     }
 
-    /* Tables */
+    /* Filter & Tables */
     .filter-bar {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -712,7 +706,7 @@
       color: #4c1d95;
     }
 
-    /* Form Grid */
+    /* Form Layout */
     .form-grid-2 {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -771,7 +765,7 @@
       border: 1px solid #e2e8f0;
     }
 
-    /* Tabs inside Laporan */
+    /* Subtabs & Reports */
     .subtabs {
       display: flex;
       gap: 8px;
@@ -796,7 +790,6 @@
       border-color: var(--primary);
     }
 
-    /* Official Report Layout */
     .report-paper {
       background: #ffffff;
       border: 1px solid #cbd5e1;
@@ -842,6 +835,36 @@
 
     .ttd-space {
       height: 64px;
+    }
+
+    /* Juknis Steps Grid */
+    .juknis-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .juknis-step {
+      background: #f8f7ff;
+      border: 1px solid #ddd6fe;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .juknis-step h4 {
+      color: var(--primary-dark);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .juknis-step ul {
+      padding-left: 18px;
+      font-size: 12.5px;
+      color: #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     /* Modal & Toast */
@@ -902,13 +925,14 @@
       border-radius: 12px;
       font-size: 12px;
       overflow-x: auto;
-      max-height: 420px;
+      max-height: 440px;
       line-height: 1.45;
     }
 
     @media (max-width: 1080px) {
       .top-grid,
-      .panel-grid {
+      .panel-grid,
+      .juknis-grid {
         grid-template-columns: 1fr;
       }
       .cat-grid {
@@ -921,11 +945,11 @@
 
     @media (max-width: 720px) {
       .sidebar {
-        width: 62px;
-        padding: 12px 6px;
+        width: 64px;
+        padding: 12px 4px;
       }
       .nav-btn {
-        width: 50px;
+        width: 54px;
         font-size: 9px;
       }
       .content-container {
@@ -968,35 +992,35 @@
     <aside class="sidebar no-print">
       <div class="brand-mark" title="Desa Wuliwutik • 53.07.04.2006" onclick="switchView('dashboard')">WWT</div>
 
-      <button class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">
+      <button type="button" class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">
         <span class="icon">🏠</span>
         <span>Ringkasan</span>
       </button>
 
-      <button class="nav-btn" data-view="inventory" onclick="switchView('inventory')">
+      <button type="button" class="nav-btn" data-view="inventory" onclick="switchView('inventory')">
         <span class="icon">📦</span>
         <span>Daftar Aset</span>
       </button>
 
-      <button class="nav-btn" data-view="input" onclick="openInputView()">
+      <button type="button" class="nav-btn" data-view="input" onclick="openInputView()">
         <span class="icon">➕</span>
         <span>Input Aset</span>
       </button>
 
-      <button class="nav-btn danger-nav" data-view="deletion" onclick="switchView('deletion')">
+      <button type="button" class="nav-btn danger-nav" data-view="deletion" onclick="switchView('deletion')">
         <span class="icon">🗑️</span>
         <span>Hapus Aset</span>
       </button>
 
-      <button class="nav-btn" data-view="reports" onclick="switchView('reports')">
+      <button type="button" class="nav-btn" data-view="reports" onclick="switchView('reports')">
         <span class="icon">📄</span>
         <span>Laporan</span>
       </button>
 
       <div class="sidebar-bottom">
-        <button class="nav-btn" data-view="settings" onclick="switchView('settings')">
+        <button type="button" class="nav-btn" data-view="settings" onclick="switchView('settings')">
           <span class="icon">⚙️</span>
-          <span>Juknis & Sheet</span>
+          <span>Juknis &amp; Google Sheets</span>
         </button>
       </div>
     </aside>
@@ -1018,7 +1042,7 @@
         <div class="topbar-right">
           <span class="code-badge" id="topbar-kode-lokasi">Kode Desa: 53.07.04.2006</span>
           <span class="conn-pill demo" id="conn-status-badge">● Mode Pratinjau Lokal</span>
-          <button class="btn btn-soft-purple btn-sm" onclick="syncFromGoogleSheets()">🔄 Sinkronkan</button>
+          <button type="button" class="btn btn-soft-purple btn-sm" onclick="syncFromGoogleSheets()">🔄 Sinkronkan</button>
           <div class="user-chip">
             <div class="user-avatar">PW</div>
             <div class="user-meta">
@@ -1048,7 +1072,7 @@
   <div class="toast no-print" id="toast-box"></div>
 
   <script>
-    const STORAGE_KEY = "WULIWTIK_INVENTARIS_V1_5307042006";
+    const STORAGE_KEY = "WULIWTIK_INVENTARIS_V2_5307042006";
 
     const GOLONGAN_META = {
       "1": { name: "Persediaan", kib: "Persediaan", color: "linear-gradient(135deg,#0f766e,#14b8a6)", desc: "Pakai Habis, Tak Habis, Bekas Pakai", presetCode: "1.01.01.01.001" },
@@ -1352,10 +1376,6 @@
       return "Rp " + Number(num || 0).toLocaleString("id-ID");
     }
 
-    function formatJuta(num) {
-      return (Number(num || 0) / 1000000).toLocaleString("id-ID", { maximumFractionDigits: 1 }) + " Jt";
-    }
-
     function getAssetEffectiveValue(asset) {
       const perolehan = Number(asset.nilai_perolehan || 0);
       const wajar = Number(asset.nilai_wajar_taksiran || 0);
@@ -1519,10 +1539,10 @@
               </div>
             </div>
             <div class="hero-actions">
-              <button class="btn btn-light" onclick="openInputView()">➕ Input Inventaris</button>
-              <button class="btn btn-soft-purple" onclick="switchView('deletion')">🗑️ Penghapusan Inventaris</button>
-              <button class="btn btn-soft-purple" onclick="switchView('reports')">📄 Laporan Juknis</button>
-              <button class="btn btn-soft-purple" onclick="syncFromGoogleSheets()">🔄 Sinkronkan Sheet</button>
+              <button type="button" class="btn btn-light" onclick="openInputView()">➕ Input Inventaris</button>
+              <button type="button" class="btn btn-soft-purple" onclick="switchView('deletion')">🗑️ Penghapusan Inventaris</button>
+              <button type="button" class="btn btn-soft-purple" onclick="switchView('reports')">📄 Laporan Juknis</button>
+              <button type="button" class="btn btn-soft-purple" onclick="switchView('settings')">⚙️ Juknis &amp; Google Sheets</button>
             </div>
           </div>
 
@@ -1548,10 +1568,10 @@
             <div class="kpi-card">
               <div class="kpi-top">
                 <span>Perlu Perbaikan / Rusak</span>
-                <span class="kpi-badge st-ringan">RR & RB</span>
+                <span class="kpi-badge st-ringan">RR &amp; RB</span>
               </div>
               <div class="kpi-val">${rusakCount} Item</div>
-              <div class="kpi-sub">Rusak ringan & rusak berat</div>
+              <div class="kpi-sub">Rusak ringan &amp; rusak berat</div>
             </div>
 
             <div class="kpi-card">
@@ -1567,10 +1587,10 @@
 
         <div class="section-head">
           <div>
-            <h2>Pengelompokan Aset Desa (Juknis Bab II & Padanan KIB)</h2>
+            <h2>Pengelompokan Aset Desa (Juknis Bab II &amp; Padanan KIB)</h2>
             <p>Klik salah satu kartu golongan untuk menyaring daftar aset berdasarkan golongan tersebut.</p>
           </div>
-          <button class="btn btn-light btn-sm" onclick="filterByGolongan('ALL')">Lihat Semua Aset →</button>
+          <button type="button" class="btn btn-light btn-sm" onclick="filterByGolongan('ALL')">Lihat Semua Aset →</button>
         </div>
 
         <div class="cat-grid">
@@ -1582,8 +1602,8 @@
             <div class="card-header">
               <h3>Statistik Aset Per Golongan</h3>
               <div class="segmented">
-                <button class="${chartMode === 'count' ? 'active' : ''}" onclick="setChartMode('count')">Jumlah Item</button>
-                <button class="${chartMode === 'value' ? 'active' : ''}" onclick="setChartMode('value')">Nilai (Juta Rp)</button>
+                <button type="button" class="${chartMode === 'count' ? 'active' : ''}" onclick="setChartMode('count')">Jumlah Item</button>
+                <button type="button" class="${chartMode === 'value' ? 'active' : ''}" onclick="setChartMode('value')">Nilai (Juta Rp)</button>
               </div>
             </div>
             ${renderBarChartSvg()}
@@ -1591,15 +1611,16 @@
 
           <div class="card">
             <div class="card-header">
-              <h3>Ringkasan Rekapitulasi & Cetak Resmi</h3>
+              <h3>Ringkasan Rekapitulasi &amp; Integrasi Sheet</h3>
             </div>
             <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
-              Akses cepat dokumen pelaporan sesuai Bab III Juknis Kabupaten Sikka: Buku Inventaris Aset Desa, Berita Acara & SPTJM, Laporan Kekayaan Milik Desa, dan Daftar Aset Tanpa Nilai (CaLK).
+              Akses cepat dokumen pelaporan sesuai Bab III Juknis Kabupaten Sikka serta pengaturan koneksi basis data Google Sheets &amp; Google Drive Desa Wuliwutik.
             </p>
             <div style="display:flex;flex-direction:column;gap:9px;">
-              <button class="btn btn-primary" onclick="switchView('reports')">📑 Buka Menu Laporan Inventaris</button>
-              <button class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor Data Aset ke CSV</button>
-              <button class="btn btn-soft-danger" onclick="switchView('deletion')">🗑️ Kelola Penghapusan & Arsip (${appState.deletedAssets.length})</button>
+              <button type="button" class="btn btn-primary" onclick="switchView('reports')">📑 Buka Menu Laporan Inventaris</button>
+              <button type="button" class="btn btn-soft-purple" onclick="switchView('settings')">⚙️ Konfigurasi Google Sheets &amp; Code.gs</button>
+              <button type="button" class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor Data Aset ke CSV</button>
+              <button type="button" class="btn btn-soft-danger" onclick="switchView('deletion')">🗑️ Kelola Penghapusan &amp; Arsip (${appState.deletedAssets.length})</button>
             </div>
           </div>
         </div>
@@ -1612,7 +1633,7 @@
     }
 
     function renderBarChartSvg() {
-      const entries = Object.entries(GOLONGAN_META).map(([gol, meta]) => {
+      const entries = Object.entries(GOLONGAN_META).map(([gol]) => {
         const list = appState.assets.filter((a) => String(a.golongan) === gol);
         const val = chartMode === "count"
           ? list.length
@@ -1688,9 +1709,9 @@
             </td>
             <td>${photoHtml}</td>
             <td style="white-space:nowrap;">
-              <button class="btn btn-light btn-sm" onclick="openDetailModal('${a.id_aset}')" title="Detail & Label">🏷️</button>
-              <button class="btn btn-soft-purple btn-sm" onclick="openInputView('${a.id_aset}')" title="Edit">✏️</button>
-              <button class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')" title="Hapus">🗑️</button>
+              <button type="button" class="btn btn-light btn-sm" onclick="openDetailModal('${a.id_aset}')" title="Detail & Label">🏷️</button>
+              <button type="button" class="btn btn-soft-purple btn-sm" onclick="openInputView('${a.id_aset}')" title="Edit">✏️</button>
+              <button type="button" class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')" title="Hapus">🗑️</button>
             </td>
           </tr>
         `;
@@ -1707,9 +1728,9 @@
             <p>Menampilkan <strong>${filtered.length}</strong> dari <strong>${appState.assets.length}</strong> aset aktif • Kode Lokasi: <strong>${appState.settings.kode_lokasi_10_digit}</strong></p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="openInputView()">➕ Input Inventaris</button>
-            <button class="btn btn-soft-danger" onclick="switchView('deletion')">🗑️ Penghapusan Inventaris</button>
-            <button class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor CSV</button>
+            <button type="button" class="btn btn-primary" onclick="openInputView()">➕ Input Inventaris</button>
+            <button type="button" class="btn btn-soft-danger" onclick="switchView('deletion')">🗑️ Penghapusan Inventaris</button>
+            <button type="button" class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor CSV</button>
           </div>
         </div>
 
@@ -1738,7 +1759,7 @@
               <option value="02">02 - BPD</option>
               <option value="03">03 - Lembaga Kemasyarakatan</option>
             </select>
-            <button class="btn btn-light" onclick="resetAllFilters()">↺ Reset Filter</button>
+            <button type="button" class="btn btn-light" onclick="resetAllFilters()">↺ Reset Filter</button>
           </div>
 
           <div class="table-wrap">
@@ -1747,10 +1768,10 @@
                 <tr>
                   <th>No</th>
                   <th>Kode Register</th>
-                  <th>Nama & Klasifikasi Aset</th>
+                  <th>Nama &amp; Klasifikasi Aset</th>
                   <th>Jumlah / Luas</th>
                   <th>Kondisi</th>
-                  <th>Lokasi & Pengguna</th>
+                  <th>Lokasi &amp; Pengguna</th>
                   <th>Nilai Aset</th>
                   <th>Foto</th>
                   <th>Aksi</th>
@@ -1804,9 +1825,9 @@
             <td><strong>${formatRupiah(getAssetEffectiveValue(a))}</strong></td>
             <td>${photoHtml}</td>
             <td style="white-space:nowrap;">
-              <button class="btn btn-light btn-sm" onclick="openDetailModal('${a.id_aset}')">🏷️</button>
-              <button class="btn btn-soft-purple btn-sm" onclick="openInputView('${a.id_aset}')">✏️</button>
-              <button class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')">🗑️</button>
+              <button type="button" class="btn btn-light btn-sm" onclick="openDetailModal('${a.id_aset}')">🏷️</button>
+              <button type="button" class="btn btn-soft-purple btn-sm" onclick="openInputView('${a.id_aset}')">✏️</button>
+              <button type="button" class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')">🗑️</button>
             </td>
           </tr>
         `;
@@ -1844,7 +1865,7 @@
             <h2>${existing ? "Edit Data Inventaris Aset" : "Input Inventaris Aset Baru"} — Desa Wuliwutik</h2>
             <p>Kode Lokasi otomatis <strong>${appState.settings.kode_lokasi_10_digit}</strong> sesuai struktur kodefikasi Juknis Kabupaten Sikka.</p>
           </div>
-          <button class="btn btn-light" onclick="switchView('inventory')">← Kembali ke Daftar Aset</button>
+          <button type="button" class="btn btn-light" onclick="switchView('inventory')">← Kembali ke Daftar Aset</button>
         </div>
 
         <form class="card" id="asset-form" onsubmit="handleSaveAsset(event)">
@@ -1982,7 +2003,7 @@
               <input type="text" class="form-control" id="inp-pj" value="${existing ? escapeAttr(existing.penanggung_jawab) : ""}" />
             </div>
             <div class="form-group">
-              <label>Status Dokumen & Klarifikasi</label>
+              <label>Status Dokumen &amp; Klarifikasi</label>
               <select class="form-control" id="inp-status-dokumen">
                 <option value="Lengkap" ${existing && existing.status_dokumen === "Lengkap" ? "selected" : ""}>Lengkap</option>
                 <option value="Perlu Klarifikasi" ${existing && existing.status_dokumen === "Perlu Klarifikasi" ? "selected" : ""}>Perlu Klarifikasi</option>
@@ -2020,7 +2041,7 @@
 
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <button type="submit" class="btn btn-primary" onclick="setPendingSubmitMode('list')">💾 Simpan Inventaris</button>
-            <button type="submit" class="btn btn-soft-purple" onclick="setPendingSubmitMode('again')">➕ Simpan & Input Lagi</button>
+            <button type="submit" class="btn btn-soft-purple" onclick="setPendingSubmitMode('again')">➕ Simpan &amp; Input Lagi</button>
             <button type="button" class="btn btn-light" onclick="switchView('inventory')">Batal</button>
           </div>
         </form>
@@ -2195,7 +2216,7 @@
             <td><strong>${escapeHtml(a.nama_aset)}</strong><br/><small style="color:var(--text-muted)">${escapeHtml(a.kelompok_juknis)} (${escapeHtml(a.kategori_kib)})</small></td>
             <td>${escapeHtml(a.kondisi)}</td>
             <td><strong>${formatRupiah(getAssetEffectiveValue(a))}</strong></td>
-            <td><button class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')">Hapus</button></td>
+            <td><button type="button" class="btn btn-soft-danger btn-sm" onclick="openSingleDeleteModal('${a.id_aset}')">Hapus</button></td>
           </tr>
         `;
       }).join("");
@@ -2208,17 +2229,17 @@
           <td><span class="status-badge st-berat">${escapeHtml(h.jenis_penghapusan)}</span></td>
           <td>${escapeHtml(h.no_sk_ba_dokumen || "-")}<br/><small style="color:var(--text-muted)">${escapeHtml(h.alasan_keterangan)}</small></td>
           <td><strong>${formatRupiah(h.nilai_aset_terakhir)}</strong></td>
-          <td><button class="btn btn-light btn-sm" onclick="restoreDeletedAsset('${h.id_log_hapus}')">↩️ Pulihkan</button></td>
+          <td><button type="button" class="btn btn-light btn-sm" onclick="restoreDeletedAsset('${h.id_log_hapus}')">↩️ Pulihkan</button></td>
         </tr>
       `).join("");
 
       return `
         <div class="section-head">
           <div>
-            <h2>Penghapusan & Arsip Inventaris Aset</h2>
+            <h2>Penghapusan &amp; Arsip Inventaris Aset</h2>
             <p>Setiap penghapusan aset aktif akan tercatat ke log riwayat (<code>Riwayat_Penghapusan</code>) dan dapat dipulihkan bila terjadi kekeliruan.</p>
           </div>
-          <button class="btn btn-danger btn-sm" onclick="openBulkDeleteModal()" ${selectedDeleteIds.size === 0 ? "disabled" : ""}>
+          <button type="button" class="btn btn-danger btn-sm" onclick="openBulkDeleteModal()" ${selectedDeleteIds.size === 0 ? "disabled" : ""}>
             🗑️ Hapus Terpilih (${selectedDeleteIds.size})
           </button>
         </div>
@@ -2232,8 +2253,8 @@
               <thead>
                 <tr>
                   <th style="width:36px;">Pilih</th>
-                  <th>Kode Barang & Lokasi</th>
-                  <th>Nama & Golongan Aset</th>
+                  <th>Kode Barang &amp; Lokasi</th>
+                  <th>Nama &amp; Golongan Aset</th>
                   <th>Kondisi</th>
                   <th>Nilai Aset</th>
                   <th>Aksi</th>
@@ -2256,9 +2277,9 @@
                 <tr>
                   <th>No</th>
                   <th>Tanggal</th>
-                  <th>Nama & Kode Aset</th>
+                  <th>Nama &amp; Kode Aset</th>
                   <th>Jenis Penghapusan</th>
-                  <th>No. Dokumen & Alasan</th>
+                  <th>No. Dokumen &amp; Alasan</th>
                   <th>Nilai Terakhir</th>
                   <th>Pulihkan</th>
                 </tr>
@@ -2316,7 +2337,7 @@
           </div>
           <div style="display:flex;justify-content:flex-end;gap:10px;">
             <button type="button" class="btn btn-light" onclick="closeModal('delete-modal')">Batal</button>
-            <button type="submit" class="btn btn-danger">Ya, Hapus & Arsipkan</button>
+            <button type="submit" class="btn btn-danger">Ya, Hapus &amp; Arsipkan</button>
           </div>
         </form>
       `;
@@ -2377,7 +2398,7 @@
       }
     }
 
-    /* ================= REPORTS VIEW (JUKNIS 3.2.3) ================= */
+    /* ================= REPORTS VIEW ================= */
     function renderReportsView() {
       let bodyHtml = "";
       if (currentReportTab === "buku") {
@@ -2394,19 +2415,19 @@
         <div class="section-head">
           <div>
             <h2>Laporan Inventaris Sesuai Juknis Kabupaten Sikka (2025)</h2>
-            <p>Buku Inventaris, Berita Acara & SPTJM, Laporan Kekayaan Milik Desa, serta Daftar Aset Tanpa Nilai (CaLK).</p>
+            <p>Buku Inventaris, Berita Acara &amp; SPTJM, Laporan Kekayaan Milik Desa, serta Daftar Aset Tanpa Nilai (CaLK).</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="window.print()">🖨️ Cetak Laporan Resmi</button>
-            <button class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor CSV</button>
+            <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Cetak Laporan Resmi</button>
+            <button type="button" class="btn btn-light" onclick="exportAssetsCsv()">⬇️ Ekspor CSV</button>
           </div>
         </div>
 
         <div class="subtabs">
-          <button class="subtab-btn ${currentReportTab === "buku" ? "active" : ""}" onclick="currentReportTab='buku';renderCurrentView();">1. Buku Inventaris Aset Desa</button>
-          <button class="subtab-btn ${currentReportTab === "ba" ? "active" : ""}" onclick="currentReportTab='ba';renderCurrentView();">2. Berita Acara & SPTJM</button>
-          <button class="subtab-btn ${currentReportTab === "kekayaan" ? "active" : ""}" onclick="currentReportTab='kekayaan';renderCurrentView();">3. Kekayaan Milik Desa (Per Golongan)</button>
-          <button class="subtab-btn ${currentReportTab === "calk" ? "active" : ""}" onclick="currentReportTab='calk';renderCurrentView();">4. Aset Tanpa Nilai (CaLK) & Tindak Lanjut</button>
+          <button type="button" class="subtab-btn ${currentReportTab === "buku" ? "active" : ""}" onclick="currentReportTab='buku';renderCurrentView();">1. Buku Inventaris Aset Desa</button>
+          <button type="button" class="subtab-btn ${currentReportTab === "ba" ? "active" : ""}" onclick="currentReportTab='ba';renderCurrentView();">2. Berita Acara &amp; SPTJM</button>
+          <button type="button" class="subtab-btn ${currentReportTab === "kekayaan" ? "active" : ""}" onclick="currentReportTab='kekayaan';renderCurrentView();">3. Kekayaan Milik Desa (Per Golongan)</button>
+          <button type="button" class="subtab-btn ${currentReportTab === "calk" ? "active" : ""}" onclick="currentReportTab='calk';renderCurrentView();">4. Aset Tanpa Nilai (CaLK) &amp; Tindak Lanjut</button>
         </div>
 
         ${bodyHtml}
@@ -2436,7 +2457,7 @@
             <strong><u>${escapeHtml(s.nama_sekretaris_desa)}</u></strong>
           </div>
           <div class="ttd-box">
-            <p>Disusun oleh,<br/><strong>Petugas/Pengurus Aset & Tim Inventarisasi</strong></p>
+            <p>Disusun oleh,<br/><strong>Petugas/Pengurus Aset &amp; Tim Inventarisasi</strong></p>
             <div class="ttd-space"></div>
             <strong><u>${escapeHtml(s.nama_pengurus_aset)}</u></strong>
           </div>
@@ -2474,11 +2495,11 @@
               <thead>
                 <tr>
                   <th>No</th>
-                  <th>Kode Barang & Register</th>
-                  <th>Nama & Spesifikasi Aset</th>
+                  <th>Kode Barang &amp; Register</th>
+                  <th>Nama &amp; Spesifikasi Aset</th>
                   <th>Golongan / KIB</th>
                   <th>Jumlah/Luas</th>
-                  <th>Asal-Usul & Tgl</th>
+                  <th>Asal-Usul &amp; Tgl</th>
                   <th>Kondisi</th>
                   <th>Lokasi</th>
                   <th>Nilai Aset</th>
@@ -2619,7 +2640,7 @@
                 <tr>
                   <th>No</th>
                   <th>Kode Barang</th>
-                  <th>Nama & Uraian Aset</th>
+                  <th>Nama &amp; Uraian Aset</th>
                   <th>Status Dokumen</th>
                   <th>Penjelasan pada CaLK / Tindak Lanjut</th>
                 </tr>
@@ -2634,7 +2655,7 @@
       `;
     }
 
-    /* ================= SETTINGS & GOOGLE APPS SCRIPT VIEW ================= */
+    /* ================= JUKNIS & GOOGLE SHEETS VIEW ================= */
     function renderSettingsView() {
       const s = appState.settings;
       const gasCode = getGoogleAppsScriptCode();
@@ -2642,13 +2663,41 @@
       return `
         <div class="section-head">
           <div>
-            <h2>Pengaturan Wilayah, Google Sheets & Kode Google Apps Script</h2>
-            <p>Hubungkan dashboard ini dengan Google Sheets & Google Drive Desa Wuliwutik (Kode Lokasi: <strong>53.07.04.2006</strong>).</p>
+            <h2>Panduan Juknis Inventarisasi &amp; Integrasi Google Sheets</h2>
+            <p>Pedoman pelaksanaan inventarisasi Kabupaten Sikka (2025) serta konfigurasi basis data Google Sheets &amp; Google Drive Desa Wuliwutik (<strong>53.07.04.2006</strong>).</p>
+          </div>
+        </div>
+
+        <div class="juknis-grid">
+          <div class="juknis-step">
+            <h4>1. Tahap Persiapan (Juknis 3.2.1)</h4>
+            <ul>
+              <li>Pembentukan tim inventarisasi &amp; rencana kerja yang ditetapkan Kepala Desa.</li>
+              <li>Penyiapan dokumen sumber (Buku Inventaris sebelumnya, sertifikat, BPKB, BAST, hibah).</li>
+              <li>Pemetaan lokasi/denah ruangan &amp; penanggung jawab ruangan.</li>
+              <li>Penyiapan label sementara &amp; label permanen serta Kertas Kerja Inventarisasi (KKI).</li>
+            </ul>
+          </div>
+          <div class="juknis-step">
+            <h4>2. Tahap Pelaksanaan (Juknis 3.2.2)</h4>
+            <ul>
+              <li><strong>Pendataan Fisik:</strong> hitung jumlah/luas/volume, cek kondisi (Baik, Rusak Ringan, Rusak Berat), identifikasi merek &amp; tanggal perolehan.</li>
+              <li><strong>Kodefikasi:</strong> Kode Barang 10 digit, Kode Lokasi <strong>53.07.04.2006</strong>, Kode Pengguna (01–99), Tahun, &amp; No. Urut (6 digit).</li>
+              <li><strong>Klarifikasi Status Kepemilikan:</strong> konfirmasi aset tanpa bukti kuat atau penerbitan Surat Keterangan Penguasaan/Tanggung Jawab Mutlak Kepala Desa.</li>
+            </ul>
+          </div>
+          <div class="juknis-step">
+            <h4>3. Tahap Pelaporan &amp; Penilaian (Juknis 3.2.3)</h4>
+            <ul>
+              <li>Pengesahan Buku Inventaris Aset Desa, Berita Acara Hasil Inventarisasi, &amp; SPTJM.</li>
+              <li>Penilaian memakai harga perolehan; jika tidak diketahui memakai NJOP (tanah/bangunan) atau harga pasar/taksiran tim.</li>
+              <li>Penyajian Laporan Kekayaan Milik Desa per golongan (format Siskeudes) &amp; daftar aset tanpa nilai pada CaLK.</li>
+            </ul>
           </div>
         </div>
 
         <form class="card" style="margin-bottom:20px;" onsubmit="saveSettingsForm(event)">
-          <h3 style="margin-bottom:14px;">Konfigurasi Wilayah & Koneksi Google Sheets</h3>
+          <h3 style="margin-bottom:14px;">Konfigurasi Wilayah &amp; Koneksi Google Sheets / Google Drive</h3>
           <div class="form-grid-3" style="margin-bottom:14px;">
             <div class="form-group">
               <label>Kode Provinsi (2 Digit)</label>
@@ -2718,7 +2767,7 @@
         <div class="card">
           <div class="card-header">
             <h3>Kode Lengkap Google Apps Script (<code>Code.gs</code>)</h3>
-            <button class="btn btn-light btn-sm" onclick="copyGasCode()">📋 Salin Code.gs</button>
+            <button type="button" class="btn btn-light btn-sm" onclick="copyGasCode()">📋 Salin Code.gs</button>
           </div>
           <pre class="code-block" id="gas-code-pre">${escapeHtml(gasCode)}</pre>
         </div>
@@ -2749,7 +2798,7 @@
     async function syncFromGoogleSheets() {
       const gasUrl = (appState.settings.gas_webapp_url || "").trim();
       if (!gasUrl.startsWith("http")) {
-        showToast("URL Google Apps Script belum diisi. Menggunakan data lokal/pratinjau.", "warning");
+        showToast("URL Google Apps Script belum diisi. Buka menu Juknis & Google Sheets untuk mengaturnya.", "warning");
         return;
       }
       showToast("Menyinkronkan data dari Google Sheets...", "info");
@@ -2768,7 +2817,7 @@
         }
       } catch (err) {
         console.error(err);
-        showToast("Gagal terhubung ke Google Sheets. Periksa deployment Web App.", "error");
+        showToast("Gagal terhubung ke Google Sheets. Periksa URL & deployment Web App.", "error");
       }
     }
 
@@ -2794,8 +2843,8 @@
       const modal = document.getElementById("detail-modal");
       document.getElementById("detail-modal-body").innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-          <h3>Detail & Label Registrasi Aset</h3>
-          <button class="btn btn-light btn-sm" onclick="closeModal('detail-modal')">✕</button>
+          <h3>Detail &amp; Label Registrasi Aset</h3>
+          <button type="button" class="btn btn-light btn-sm" onclick="closeModal('detail-modal')">✕</button>
         </div>
 
         <div style="border:2px solid #4c1d95;border-radius:12px;padding:14px;background:#faf9ff;margin-bottom:16px;">
@@ -2811,8 +2860,8 @@
         ${photoUrl ? `<div style="margin-bottom:14px;text-align:center;"><img src="${escapeAttr(photoUrl)}" style="max-height:240px;max-width:100%;border-radius:10px;" alt="Foto Aset" /></div>` : ""}
 
         <div style="display:flex;justify-content:flex-end;gap:10px;">
-          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Cetak Label</button>
-          <button class="btn btn-light btn-sm" onclick="closeModal('detail-modal')">Tutup</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Cetak Label</button>
+          <button type="button" class="btn btn-light btn-sm" onclick="closeModal('detail-modal')">Tutup</button>
         </div>
       `;
       modal.classList.add("open");
@@ -2994,14 +3043,14 @@ function jsonResponse(obj) {
 
     function escapeHtml(str) {
       return String(str ?? "")
-        .replace(/&/g, "&")
-        .replace(/</g, "<")
-        .replace(/>/g, ">")
-        .replace(/"/g, """);
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
     function escapeAttr(str) {
-      return escapeHtml(str).replace(/'/g, "'");
+      return escapeHtml(str).replace(/'/g, "&#39;");
     }
 
     renderCurrentView();
