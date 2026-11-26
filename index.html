@@ -1451,8 +1451,15 @@
     };
 
     // =========================================================================
-    // 3. SISTEM LOGIN & SESI PENGGUNA (TERHUBUNG KE TAB 'Pengguna')
+    // 3. SISTEM LOGIN & SESI PENGGUNA (SHA-256 CLIENT-SIDE HASHING)
     // =========================================================================
+    async function computeSha256Hex(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
     function togglePasswordVisibility() {
       const inp = document.getElementById('login-password');
       inp.type = inp.type === 'password' ? 'text' : 'password';
@@ -1470,13 +1477,16 @@
       btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Memverifikasi Akun...</span>`;
 
       try {
+        // Hash kata sandi dengan SHA-256 sebelum dikirim ke server
+        const passwordHash = await computeSha256Hex(password);
+
         const res = await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({
             action: 'login',
             username: username,
-            password: password
+            passwordHash: passwordHash
           })
         });
 
@@ -1499,32 +1509,6 @@
         btn.innerHTML = `<i data-lucide="log-in" class="w-4 h-4"></i><span>Masuk ke Sistem Inventaris</span>`;
         lucide.createIcons();
       }
-    }
-
-    async function enterAuthenticatedApp() {
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('app-shell').classList.remove('hidden');
-
-      const u = appState.currentUser;
-      const initials = (u.nama_lengkap || 'DW').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-      document.getElementById('topbar-user-initials').textContent = initials;
-      document.getElementById('topbar-user-name').textContent = u.nama_lengkap;
-      document.getElementById('topbar-user-role').textContent = `${u.jabatan} (${u.role})`;
-      document.getElementById('del-petugas').value = u.nama_lengkap;
-
-      await syncWithGoogleSheets(false);
-    }
-
-    function handleLogout() {
-      sessionStorage.removeItem(SESSION_USER_KEY);
-      appState.currentUser = null;
-      appState.assets = [];
-      appState.deletionHistory = [];
-      appState.baLogs = [];
-      document.getElementById('login-form').reset();
-      document.getElementById('app-shell').classList.add('hidden');
-      document.getElementById('login-screen').classList.remove('hidden');
-      showToast('Anda telah keluar dari sistem.', 'info');
     }
 
     // =========================================================================
