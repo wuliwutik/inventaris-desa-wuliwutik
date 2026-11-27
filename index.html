@@ -1464,7 +1464,47 @@
       const inp = document.getElementById('login-password');
       inp.type = inp.type === 'password' ? 'text' : 'password';
     }
+    function getUserInitials(name = '') {
+      const parts = String(name).trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return 'DW';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
 
+    function updateUserTopbarUI() {
+      const user = appState.currentUser || {};
+      const nama = user.nama_lengkap || user.username || 'Pengguna';
+      const roleText = user.jabatan || user.role || 'Desa Wuliwutik';
+
+      const nameEl = document.getElementById('topbar-user-name');
+      const roleEl = document.getElementById('topbar-user-role');
+      const initEl = document.getElementById('topbar-user-initials');
+      const delPetugasEl = document.getElementById('del-petugas');
+
+      if (nameEl) nameEl.textContent = nama;
+      if (roleEl) roleEl.textContent = roleText;
+      if (initEl) initEl.textContent = getUserInitials(nama);
+      if (delPetugasEl && !delPetugasEl.value) delPetugasEl.value = nama;
+    }
+
+    async function enterAuthenticatedApp() {
+      document.getElementById('login-screen')?.classList.add('hidden');
+      document.getElementById('app-shell')?.classList.remove('hidden');
+      updateUserTopbarUI();
+      await syncWithGoogleSheets(false);
+      switchPage('dashboard');
+      lucide.createIcons();
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem(SESSION_USER_KEY);
+      appState.currentUser = null;
+      document.getElementById('app-shell')?.classList.add('hidden');
+      document.getElementById('login-screen')?.classList.remove('hidden');
+      const passEl = document.getElementById('login-password');
+      if (passEl) passEl.value = '';
+      lucide.createIcons();
+    }
     async function handleLogin(event) {
       event.preventDefault();
       const username = document.getElementById('login-username').value.trim();
