@@ -217,9 +217,9 @@
             <span class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute left-16 bg-slate-900 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-lg z-50">Laporan Inventaris</span>
           </button>
 
-          <button onclick="switchPage('pengaturan')" data-nav="pengaturan" class="nav-btn group w-12 h-12 rounded-2xl flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-violet-50" title="Identitas Pejabat & Panduan">
+          <button onclick="switchPage('pengaturan')" data-nav="pengaturan" class="nav-btn group w-12 h-12 rounded-2xl flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-violet-50" title="Pengaturan Pengguna, Penyimpanan & Pejabat">
             <i data-lucide="settings" class="w-5 h-5"></i>
-            <span class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute left-16 bg-slate-900 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-lg z-50">Identitas Pejabat & Panduan</span>
+            <span class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute left-16 bg-slate-900 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-lg z-50">Pengaturan Sistem & Pengguna</span>
           </button>
         </nav>
       </div>
@@ -280,7 +280,7 @@
               <span id="calk-notif-dot" class="hidden absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500"></span>
             </button>
 
-            <div class="flex items-center gap-2.5 pl-2 pr-3.5 py-1.5 rounded-2xl bg-white border border-slate-200/80 shadow-soft">
+            <button onclick="switchPage('pengaturan')" title="Klik untuk Pengaturan Pengguna & Ubah Password" class="flex items-center gap-2.5 pl-2 pr-3.5 py-1.5 rounded-2xl bg-white border border-slate-200/80 hover:border-violet-300 shadow-soft transition-colors text-left">
               <div id="topbar-user-initials" class="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center">
                 DW
               </div>
@@ -288,7 +288,7 @@
                 <p class="text-xs font-bold text-slate-800" id="topbar-user-name">Pengguna</p>
                 <p class="text-[10px] font-semibold text-violet-600 uppercase tracking-wider" id="topbar-user-role">Desa Wuliwutik</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </header>
@@ -723,7 +723,7 @@
                 </div>
               </div>
 
-              <!-- Dokumentasi Foto Fisik via Google Drive -->
+              <!-- Dokumentasi Foto Fisik via Google Drive Otomatis -->
               <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft space-y-4">
                 <div class="flex items-center gap-2.5">
                   <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
@@ -731,7 +731,7 @@
                   </div>
                   <div>
                     <h3 class="text-sm font-bold text-slate-800">Dokumentasi Foto Fisik (Google Drive)</h3>
-                    <p class="text-[11px] text-slate-500">Tempel tautan Drive atau unggah foto langsung</p>
+                    <p class="text-[11px] text-slate-500">Otomatis tersimpan ke folder Drive Desa Wuliwutik</p>
                   </div>
                 </div>
 
@@ -741,16 +741,18 @@
                 </div>
 
                 <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Tautan Google Drive Foto Aset</label>
-                  <input type="url" id="inp-foto-url" oninput="handleDriveUrlInput(this.value)" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 focus:bg-white focus:border-violet-500 focus:outline-none" />
-                  <p id="drive-id-detected" class="text-[10px] text-emerald-600 font-mono mt-1 hidden"></p>
+                  <label class="block text-xs font-bold text-slate-700 mb-1.5">Unggah Foto dari Perangkat / Kamera HP</label>
+                  <input type="file" id="inp-foto-file" accept="image/*" onchange="handleLocalPhotoUpload(this)" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer" />
+                  <p class="text-[10px] text-emerald-600 font-medium mt-1">Foto otomatis diunggah ke Folder <code>Dokumentasi_Foto_Aset_Desa_Wuliwutik</code> tanpa perlu input URL manual.</p>
                 </div>
 
-                <div class="pt-1 border-t border-slate-100">
-                  <label class="block text-xs font-bold text-slate-700 mb-1.5">Atau Unggah Foto dari Perangkat / HP</label>
-                  <input type="file" id="inp-foto-file" accept="image/*" onchange="handleLocalPhotoUpload(this)" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer" />
-                  <p class="text-[10px] text-slate-400 mt-1">Foto otomatis diunggah ke Folder Google Drive Desa Wuliwutik saat disimpan.</p>
-                </div>
+                <details class="pt-1 border-t border-slate-100">
+                  <summary class="text-[11px] font-semibold text-slate-500 cursor-pointer hover:text-violet-600">Opsi lanjutan: Tempel tautan Google Drive yang sudah ada</summary>
+                  <div class="mt-2">
+                    <input type="url" id="inp-foto-url" oninput="handleDriveUrlInput(this.value)" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 focus:bg-white focus:border-violet-500 focus:outline-none" />
+                    <p id="drive-id-detected" class="text-[10px] text-emerald-600 font-mono mt-1 hidden"></p>
+                  </div>
+                </details>
               </div>
 
               <!-- Action Buttons -->
@@ -1054,16 +1056,175 @@
         </section>
 
         <!-- ===================================================================== -->
-        <!-- HALAMAN 6: IDENTITAS WILAYAH, PEJABAT & PANDUAN JUKNIS                -->
+        <!-- HALAMAN 6: PENGATURAN PENGGUNA, PENYIMPANAN OTOMATIS & WILAYAH        -->
         <!-- ===================================================================== -->
         <section id="page-pengaturan" class="page-section hidden space-y-6">
           <div>
-            <span class="px-2.5 py-0.5 rounded-lg bg-violet-100 text-violet-700 font-bold text-xs">PARAMETER WILAYAH & PEJABAT</span>
-            <h1 class="text-2xl font-extrabold text-slate-800 mt-1">Identitas Desa Wuliwutik & Panduan Juknis Sikka 2025</h1>
+            <span class="px-2.5 py-0.5 rounded-lg bg-violet-100 text-violet-700 font-bold text-xs">ADMINISTRASI SISTEM & KEAMANAN</span>
+            <h1 class="text-2xl font-extrabold text-slate-800 mt-1">Pengaturan Pengguna, Penyimpanan Otomatis & Pejabat Desa</h1>
           </div>
 
           <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-            <div class="xl:col-span-6 space-y-6">
+            <!-- KOLOM KIRI (7 cols): MANAJEMEN PENGGUNA & UBAH PASSWORD -->
+            <div class="xl:col-span-7 space-y-6">
+              <!-- Card 1: Manajemen Akun Pengguna (Tambah & Kurangi Pengguna) -->
+              <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center">
+                      <i data-lucide="users" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                      <h2 class="text-base font-bold text-slate-800">Manajemen Akun Pengguna Sistem</h2>
+                      <p class="text-xs text-slate-500">Tambah operator baru, hapus pengguna, atau reset kata sandi (SHA-256)</p>
+                    </div>
+                  </div>
+                  <span id="user-count-badge" class="px-2.5 py-1 rounded-xl bg-violet-50 text-violet-700 font-bold text-xs">0 Pengguna</span>
+                </div>
+
+                <!-- Form Tambah Pengguna Baru (Khusus ADMIN) -->
+                <div id="admin-add-user-box" class="p-4 rounded-2xl bg-violet-50/60 border border-violet-100 space-y-3">
+                  <h3 class="text-xs font-extrabold uppercase tracking-wider text-violet-800 flex items-center gap-1.5">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    <span>Tambah Pengguna Baru</span>
+                  </h3>
+                  <form onsubmit="handleCreateUser(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Username Login *</label>
+                      <input type="text" id="new-user-username" required placeholder="Contoh: kaur_umum" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 focus:border-violet-500 focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Kata Sandi Awal *</label>
+                      <input type="password" id="new-user-password" required minlength="5" placeholder="Minimal 5 karakter" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 focus:border-violet-500 focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Nama Lengkap *</label>
+                      <input type="text" id="new-user-nama" required placeholder="Nama lengkap petugas" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 focus:border-violet-500 focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Jabatan *</label>
+                      <input type="text" id="new-user-jabatan" required placeholder="Contoh: Kaur Umum & Perencanaan" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 focus:border-violet-500 focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Hak Akses (Role) *</label>
+                      <select id="new-user-role" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-semibold focus:border-violet-500 focus:outline-none">
+                        <option value="OPERATOR">OPERATOR (Input & Kelola Aset)</option>
+                        <option value="VERIFIKATOR">VERIFIKATOR (Sekdes / Pemeriksa)</option>
+                        <option value="ADMIN">ADMIN (Penuh + Kelola Pengguna)</option>
+                      </select>
+                    </div>
+                    <div class="flex items-end">
+                      <button type="submit" class="w-full py-2 px-4 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold shadow-sm transition-all flex items-center justify-center gap-1.5">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Tambah Pengguna</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Daftar Pengguna Terdaftar -->
+                <div class="overflow-x-auto border border-slate-200/80 rounded-2xl">
+                  <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500">
+                        <th class="py-3 px-3.5">Pengguna & Username</th>
+                        <th class="py-3 px-3.5">Jabatan</th>
+                        <th class="py-3 px-3.5">Role</th>
+                        <th class="py-3 px-3.5 text-center">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="users-table-tbody" class="divide-y divide-slate-100"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Card 2: Ubah Password Akun Pribadi -->
+              <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft space-y-4">
+                <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                  <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                    <i data-lucide="key-round" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-base font-bold text-slate-800">Ubah Kata Sandi Akun Saya</h2>
+                    <p class="text-xs text-slate-500">Akun aktif saat ini: <strong id="self-pwd-username" class="text-violet-700">-</strong> (Dienkripsi otomatis dengan SHA-256)</p>
+                  </div>
+                </div>
+
+                <form onsubmit="handleChangeSelfPassword(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Kata Sandi Lama *</label>
+                    <input type="password" id="self-old-password" required placeholder="Password saat ini" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Kata Sandi Baru *</label>
+                    <input type="password" id="self-new-password" required minlength="5" placeholder="Minimal 5 karakter" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Konfirmasi Sandi Baru *</label>
+                    <input type="password" id="self-confirm-password" required minlength="5" placeholder="Ulangi password baru" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-3 flex justify-end pt-1">
+                    <button type="submit" class="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs inline-flex items-center gap-2 transition-all">
+                      <i data-lucide="shield-check" class="w-4 h-4"></i>
+                      <span>Simpan Kata Sandi Baru</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- KOLOM KANAN (5 cols): LOKASI PENYIMPANAN OTOMATIS & PEJABAT PENGESAH -->
+            <div class="xl:col-span-5 space-y-6">
+              <!-- Card 3: Pengaturan Lokasi Penyimpanan Otomatis (Tanpa Input Manual) -->
+              <div class="bg-white rounded-3xl p-6 border border-emerald-200/80 shadow-soft space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <i data-lucide="folder-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                      <h2 class="text-base font-bold text-slate-800">Lokasi Penyimpanan Otomatis</h2>
+                      <p class="text-xs text-slate-500">Terdeteksi & dibuat otomatis oleh sistem (tanpa atur manual)</p>
+                    </div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-[10px] flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> AUTO-SYNC
+                  </span>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                  <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] font-bold text-slate-500 uppercase">1. Basis Data Tabel (Google Sheets)</span>
+                      <a id="auto-sheet-link" href="#" target="_blank" class="hidden text-violet-600 font-bold hover:underline inline-flex items-center gap-1">
+                        <span>Buka Sheet</span>
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                      </a>
+                    </div>
+                    <p id="auto-sheet-name" class="font-bold text-slate-800">Terhubung otomatis ke Spreadsheet Utama</p>
+                    <p class="text-[11px] text-slate-500">Tab aktif: <code>Aset_Utama</code>, <code>Pengguna</code>, <code>Riwayat_Penghapusan</code>, <code>Log_Inventarisasi_BA</code></p>
+                  </div>
+
+                  <div class="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/70 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] font-bold text-emerald-800 uppercase">2. Folder Foto Aset (Google Drive)</span>
+                      <a id="auto-drive-link" href="#" target="_blank" class="hidden text-emerald-700 font-bold hover:underline inline-flex items-center gap-1">
+                        <span>Buka Folder Drive</span>
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                      </a>
+                    </div>
+                    <p id="auto-drive-name" class="font-mono font-bold text-slate-800">Dokumentasi_Foto_Aset_Desa_Wuliwutik</p>
+                    <p id="auto-drive-url-text" class="text-[11px] text-slate-600 break-all">Folder dibuat otomatis di Google Drive saat pertama kali sinkronisasi atau unggah foto.</p>
+                  </div>
+                </div>
+
+                <button type="button" onclick="verifyAutoStorage()" class="w-full py-2.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all">
+                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                  <span>Verifikasi & Sinkronkan Folder Penyimpanan Otomatis</span>
+                </button>
+              </div>
+
+              <!-- Card 4: Identitas Wilayah & Pejabat Pengesah -->
               <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div class="flex items-center gap-2.5">
@@ -1072,39 +1233,27 @@
                     </div>
                     <div>
                       <h2 class="text-base font-bold text-slate-800">Identitas Wilayah & Pejabat Pengesah</h2>
-                      <p class="text-xs text-slate-500">Tersimpan langsung pada tab <code>Pengaturan_Wilayah</code> di database</p>
+                      <p class="text-xs text-slate-500">Digunakan pada kop dan tanda tangan laporan resmi</p>
                     </div>
                   </div>
                   <span class="px-2.5 py-1 rounded-lg bg-violet-100 text-violet-800 font-mono font-bold text-xs">53.07.04.2006</span>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                    <span class="text-slate-400 block text-[10px]">Provinsi (53)</span>
-                    <strong class="text-slate-800">Nusa Tenggara Timur</strong>
+                <div class="grid grid-cols-2 gap-2.5 text-xs">
+                  <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+                    <span class="text-slate-400 block text-[10px]">Provinsi / Kab (53.07)</span>
+                    <strong class="text-slate-800">NTT — Kab. Sikka</strong>
                   </div>
-                  <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                    <span class="text-slate-400 block text-[10px]">Kabupaten (07)</span>
-                    <strong class="text-slate-800">Kabupaten Sikka</strong>
-                  </div>
-                  <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                    <span class="text-slate-400 block text-[10px]">Kecamatan (04)</span>
-                    <strong class="text-slate-800">Kecamatan Nita</strong>
-                  </div>
-                  <div class="p-3 rounded-2xl bg-violet-50 border border-violet-200">
-                    <span class="text-violet-500 block text-[10px]">Desa (2.006)</span>
-                    <strong class="text-violet-900">Desa Wuliwutik</strong>
+                  <div class="p-2.5 rounded-2xl bg-violet-50 border border-violet-200">
+                    <span class="text-violet-500 block text-[10px]">Kec / Desa (04.2006)</span>
+                    <strong class="text-violet-900">Nita — Desa Wuliwutik</strong>
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Tahun Inventarisasi Aktif</label>
                     <input type="text" id="cfg-tahun" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Tautan Folder Google Drive Foto</label>
-                    <input type="url" id="cfg-gdrive-folder" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kepala Desa Wuliwutik</label>
@@ -1114,50 +1263,15 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">Nama Sekretaris Desa (Verifikator)</label>
                     <input type="text" id="cfg-sekdes" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800" />
                   </div>
-                  <div class="sm:col-span-2">
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Pengurus Barang / Ketua Tim Inventarisasi</label>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Pengurus Barang / Ketua Tim</label>
                     <input type="text" id="cfg-pengurus" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800" />
                   </div>
                 </div>
 
-                <button onclick="saveSettings()" class="px-5 py-2.5 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md shadow-violet-500/20">
-                  Simpan Perubahan ke Database
+                <button onclick="saveSettings()" class="w-full py-2.5 px-5 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md shadow-violet-500/20">
+                  Simpan Identitas Pejabat ke Database
                 </button>
-              </div>
-            </div>
-
-            <div class="xl:col-span-6 space-y-6">
-              <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft space-y-3.5">
-                <h2 class="text-base font-bold text-slate-800">Alur Inventarisasi Aset Desa (Bab III Juknis Sikka 2025)</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                  <div class="p-3.5 rounded-2xl bg-violet-50/70 border border-violet-100">
-                    <span class="font-extrabold text-violet-700 block mb-1">1. Persiapan (3.2.1)</span>
-                    <p class="text-slate-600 leading-relaxed">SK Tim Inventarisasi oleh Kades, penyiapan dokumen sumber, denah lokasi ruangan, label sementara/permanen, dan KKI.</p>
-                  </div>
-                  <div class="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100">
-                    <span class="font-extrabold text-indigo-700 block mb-1">2. Pelaksanaan (3.2.2)</span>
-                    <p class="text-slate-600 leading-relaxed">Hitung fisik, cek kondisi (Baik/RR/RB), kodefikasi 10 digit + register bertingkat, klarifikasi bukti/SPTJM, dan dokumentasi foto.</p>
-                  </div>
-                  <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-100">
-                    <span class="font-extrabold text-emerald-700 block mb-1">3. Pelaporan (3.2.3)</span>
-                    <p class="text-slate-600 leading-relaxed">Buku Inventaris disahkan Sekdes & Kades, BA & SPTJM, Laporan Kekayaan Siskeudes, serta daftar aset tanpa nilai pada CaLK.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft space-y-3">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-sm font-bold text-slate-800">Manajemen Akun Pengguna</h3>
-                    <p class="text-xs text-slate-500">Data login dibaca langsung dari tab <code>Pengguna</code> pada Google Spreadsheet</p>
-                  </div>
-                </div>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                  Untuk menambah petugas baru, mengubah kata sandi, atau menonaktifkan akun, silakan kelola baris pada tab <strong><code>Pengguna</code></strong> di Google Spreadsheet Anda (kolom: <code>id_user, username, password, nama_lengkap, jabatan, role, status</code>).
-                </p>
               </div>
             </div>
           </div>
@@ -1276,11 +1390,44 @@
   </div>
 
   <!-- ========================================================================= -->
+  <!-- MODAL 4: RESET PASSWORD PENGGUNA OLEH ADMIN                               -->
+  <!-- ========================================================================= -->
+  <div id="modal-admin-reset-pwd" class="no-print fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-slate-800">Atur Ulang Kata Sandi Pengguna</h3>
+          <p id="reset-pwd-target-label" class="text-xs text-violet-700 font-semibold mt-0.5">-</p>
+        </div>
+        <button onclick="closeModal('modal-admin-reset-pwd')" class="p-2 rounded-xl text-slate-400 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="submitAdminResetPassword(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="reset-pwd-user-id" value="" />
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Kata Sandi Baru *</label>
+          <input type="password" id="reset-pwd-new" required minlength="5" placeholder="Masukkan kata sandi baru..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Konfirmasi Kata Sandi Baru *</label>
+          <input type="password" id="reset-pwd-confirm" required minlength="5" placeholder="Ulangi kata sandi baru..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-admin-reset-pwd')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold">Batal</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold">Simpan Password Baru</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
   <!-- JAVASCRIPT LOGIC (DIRECT DATABASE CONNECTION & AUTHENTICATION)            -->
   <!-- ========================================================================= -->
   <script>
     // =========================================================================
-    // 1. KONFIGURASI KONEKSI DATABASE LANGSUNG (GANTI URL INI DENGAN WEB APP ANDA)
+    // 1. KONFIGURASI KONEKSI DATABASE LANGSUNG
     // =========================================================================
     const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxF-qoB8PHykt6IOngKmFEYmjfl0Gob1BdQbHfgCQPOSfqd3nUg0BHb95lVNPrpTwNS9g/exec';
 
@@ -1429,13 +1576,21 @@
     };
 
     // =========================================================================
-    // 2. STATE APLIKASI (100% DARI DATABASE, TANPA DATA DUMMY)
+    // 2. STATE APLIKASI
     // =========================================================================
     const SESSION_USER_KEY = 'wuliwutik_auth_session_v1';
 
     let appState = {
       currentUser: null,
       wilayah: { ...DEFAULT_WILAYAH },
+      storageInfo: {
+        spreadsheetName: 'Database Inventaris Desa Wuliwutik',
+        spreadsheetUrl: '',
+        driveFolderName: 'Dokumentasi_Foto_Aset_Desa_Wuliwutik',
+        driveFolderId: '',
+        driveFolderUrl: ''
+      },
+      users: [],
       assets: [],
       deletionHistory: [],
       baLogs: [],
@@ -1464,6 +1619,7 @@
       const inp = document.getElementById('login-password');
       inp.type = inp.type === 'password' ? 'text' : 'password';
     }
+
     function getUserInitials(name = '') {
       const parts = String(name).trim().split(/\s+/).filter(Boolean);
       if (parts.length === 0) return 'DW';
@@ -1505,6 +1661,7 @@
       if (passEl) passEl.value = '';
       lucide.createIcons();
     }
+
     async function handleLogin(event) {
       event.preventDefault();
       const username = document.getElementById('login-username').value.trim();
@@ -1517,7 +1674,6 @@
       btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Memverifikasi Akun...</span>`;
 
       try {
-        // Hash kata sandi dengan SHA-256 sebelum dikirim ke server
         const passwordHash = await computeSha256Hex(password);
 
         const res = await fetch(GAS_WEBAPP_URL, {
@@ -1579,6 +1735,10 @@
           if (json.wilayah) {
             appState.wilayah = { ...DEFAULT_WILAYAH, ...json.wilayah };
           }
+          if (json.storageInfo) {
+            appState.storageInfo = { ...appState.storageInfo, ...json.storageInfo };
+          }
+          appState.users = Array.isArray(json.users) ? json.users : [];
           appState.assets = Array.isArray(json.assets) ? json.assets : [];
           appState.deletionHistory = Array.isArray(json.deletionHistory) ? json.deletionHistory : [];
           appState.baLogs = Array.isArray(json.baLogs) ? json.baLogs : [];
@@ -2025,7 +2185,7 @@
         appState.uploadedPhotoBase64 = e.target.result;
         appState.uploadedPhotoName = file.name;
         document.getElementById('foto-preview-box').innerHTML = `<img src="${e.target.result}" alt="Pratinjau Unggahan" class="w-full h-full object-cover" />`;
-        showToast(`Foto "${file.name}" siap diunggah ke Google Drive.`, 'info');
+        showToast(`Foto "${file.name}" siap diunggah otomatis ke Google Drive.`, 'info');
       };
       reader.readAsDataURL(file);
     }
@@ -2954,7 +3114,7 @@
     }
 
     // =========================================================================
-    // 13. EKSPOR CSV & PENGATURAN WILAYAH KE DATABASE
+    // 13. EKSPOR CSV, MANAJEMEN PENGGUNA, PENYIMPANAN OTOMATIS & WILAYAH
     // =========================================================================
     function downloadCSV(filename, rows) {
       const csvContent = rows.map(r => r.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
@@ -3018,17 +3178,274 @@
       }
     }
 
+    // --- Manajemen Pengguna & Password ---
+    function renderUsersTable() {
+      const tbody = document.getElementById('users-table-tbody');
+      const countBadge = document.getElementById('user-count-badge');
+      const addBox = document.getElementById('admin-add-user-box');
+      if (!tbody) return;
+
+      const currentUser = appState.currentUser || {};
+      const isAdmin = String(currentUser.role || '').toUpperCase() === 'ADMIN';
+
+      if (addBox) {
+        addBox.classList.toggle('hidden', !isAdmin);
+      }
+
+      const users = appState.users || [];
+      if (countBadge) countBadge.textContent = `${users.length} Pengguna`;
+
+      if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400">Belum ada data pengguna termuat dari database.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = users.map(u => {
+        const isSelf = String(u.id_user) === String(currentUser.id_user);
+        const roleBadge = u.role === 'ADMIN'
+          ? 'bg-violet-100 text-violet-800'
+          : u.role === 'VERIFIKATOR'
+            ? 'bg-indigo-100 text-indigo-800'
+            : 'bg-slate-100 text-slate-700';
+
+        return `
+          <tr class="hover:bg-slate-50/80">
+            <td class="py-3 px-3.5">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800">${u.nama_lengkap}</span>
+                ${isSelf ? '<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[9px] font-bold">Anda</span>' : ''}
+              </div>
+              <p class="font-mono text-[11px] text-slate-500">@${u.username}</p>
+            </td>
+            <td class="py-3 px-3.5 text-slate-600">${u.jabatan || '-'}</td>
+            <td class="py-3 px-3.5">
+              <span class="px-2 py-0.5 rounded-md font-bold text-[10px] ${roleBadge}">${u.role}</span>
+            </td>
+            <td class="py-3 px-3.5 text-center">
+              ${isAdmin ? `
+                <div class="inline-flex items-center gap-1.5">
+                  <button type="button" onclick="openAdminResetPasswordModal('${u.id_user}', '${u.nama_lengkap} (@${u.username})')" title="Reset Kata Sandi Pengguna" class="p-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80">
+                    <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+                  </button>
+                  ${!isSelf ? `
+                    <button type="button" onclick="handleDeleteUser('${u.id_user}', '${u.nama_lengkap}')" title="Hapus Pengguna" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80">
+                      <i data-lucide="user-minus" class="w-3.5 h-3.5"></i>
+                    </button>
+                  ` : ''}
+                </div>
+              ` : `<span class="text-[11px] text-slate-400">Hanya Admin</span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    async function handleCreateUser(event) {
+      event.preventDefault();
+      const username = document.getElementById('new-user-username').value.trim().toLowerCase();
+      const password = document.getElementById('new-user-password').value.trim();
+      const nama_lengkap = document.getElementById('new-user-nama').value.trim();
+      const jabatan = document.getElementById('new-user-jabatan').value.trim();
+      const role = document.getElementById('new-user-role').value;
+
+      if (!username || !password || !nama_lengkap) {
+        showToast('Lengkapi username, password, dan nama pengguna.', 'error');
+        return;
+      }
+
+      try {
+        const passwordHash = await computeSha256Hex(password);
+        const res = await sendToDatabase({
+          action: 'createUser',
+          data: { username, passwordHash, nama_lengkap, jabatan, role, status: 'AKTIF' }
+        }, 'Menambahkan pengguna baru ke database...');
+
+        if (res.status === 'success') {
+          if (Array.isArray(res.users)) appState.users = res.users;
+          event.target.reset();
+          renderUsersTable();
+          showToast(`Pengguna "${nama_lengkap}" (@${username}) berhasil ditambahkan.`, 'success');
+        } else {
+          showToast(res.message || 'Gagal menambahkan pengguna.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal terhubung ke server saat menambah pengguna.', 'error');
+      }
+    }
+
+    async function handleDeleteUser(userId, userName) {
+      if (!confirm(`Hapus akun pengguna "${userName}" dari sistem? Pengguna tersebut tidak akan bisa login lagi.`)) {
+        return;
+      }
+
+      try {
+        const res = await sendToDatabase({
+          action: 'deleteUser',
+          id_user: userId,
+          requester_id: appState.currentUser?.id_user || ''
+        }, 'Menghapus pengguna dari database...');
+
+        if (res.status === 'success') {
+          if (Array.isArray(res.users)) appState.users = res.users;
+          renderUsersTable();
+          showToast(`Akun "${userName}" berhasil dihapus.`, 'success');
+        } else {
+          showToast(res.message || 'Gagal menghapus pengguna.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan saat menghapus pengguna.', 'error');
+      }
+    }
+
+    async function handleChangeSelfPassword(event) {
+      event.preventDefault();
+      const oldPwd = document.getElementById('self-old-password').value.trim();
+      const newPwd = document.getElementById('self-new-password').value.trim();
+      const confirmPwd = document.getElementById('self-confirm-password').value.trim();
+
+      if (newPwd !== confirmPwd) {
+        showToast('Konfirmasi kata sandi baru tidak cocok.', 'error');
+        return;
+      }
+      if (!appState.currentUser?.id_user) {
+        showToast('Sesi pengguna tidak valid. Silakan login ulang.', 'error');
+        return;
+      }
+
+      try {
+        const oldPasswordHash = await computeSha256Hex(oldPwd);
+        const newPasswordHash = await computeSha256Hex(newPwd);
+
+        const res = await sendToDatabase({
+          action: 'changeUserPassword',
+          id_user: appState.currentUser.id_user,
+          oldPasswordHash,
+          newPasswordHash,
+          byAdmin: false
+        }, 'Memperbarui kata sandi...');
+
+        if (res.status === 'success') {
+          event.target.reset();
+          showToast('Kata sandi Anda berhasil diperbarui!', 'success');
+        } else {
+          showToast(res.message || 'Kata sandi lama salah atau gagal memperbarui.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal terhubung ke server saat mengubah kata sandi.', 'error');
+      }
+    }
+
+    function openAdminResetPasswordModal(userId, label) {
+      document.getElementById('reset-pwd-user-id').value = userId;
+      document.getElementById('reset-pwd-target-label').textContent = label;
+      document.getElementById('reset-pwd-new').value = '';
+      document.getElementById('reset-pwd-confirm').value = '';
+      openModal('modal-admin-reset-pwd');
+      lucide.createIcons();
+    }
+
+    async function submitAdminResetPassword(event) {
+      event.preventDefault();
+      const userId = document.getElementById('reset-pwd-user-id').value;
+      const newPwd = document.getElementById('reset-pwd-new').value.trim();
+      const confirmPwd = document.getElementById('reset-pwd-confirm').value.trim();
+
+      if (newPwd !== confirmPwd) {
+        showToast('Konfirmasi kata sandi baru tidak cocok.', 'error');
+        return;
+      }
+
+      try {
+        const newPasswordHash = await computeSha256Hex(newPwd);
+        const res = await sendToDatabase({
+          action: 'changeUserPassword',
+          id_user: userId,
+          newPasswordHash,
+          byAdmin: true
+        }, 'Mengatur ulang kata sandi pengguna...');
+
+        if (res.status === 'success') {
+          closeModal('modal-admin-reset-pwd');
+          showToast('Kata sandi pengguna berhasil diperbarui.', 'success');
+        } else {
+          showToast(res.message || 'Gagal mengatur ulang kata sandi.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal terhubung ke server.', 'error');
+      }
+    }
+
+    // --- Lokasi Penyimpanan Otomatis ---
+    function updateAutoStorageUI() {
+      const sInfo = appState.storageInfo || {};
+      const sheetNameEl = document.getElementById('auto-sheet-name');
+      const sheetLinkEl = document.getElementById('auto-sheet-link');
+      const driveNameEl = document.getElementById('auto-drive-name');
+      const driveUrlEl = document.getElementById('auto-drive-url-text');
+      const driveLinkEl = document.getElementById('auto-drive-link');
+
+      if (sheetNameEl && sInfo.spreadsheetName) {
+        sheetNameEl.textContent = sInfo.spreadsheetName;
+      }
+      if (sheetLinkEl && sInfo.spreadsheetUrl) {
+        sheetLinkEl.href = sInfo.spreadsheetUrl;
+        sheetLinkEl.classList.remove('hidden');
+      }
+
+      const folderUrl = sInfo.driveFolderUrl || appState.wilayah.folder_gdrive_foto_url || '';
+      if (driveNameEl && sInfo.driveFolderName) {
+        driveNameEl.textContent = sInfo.driveFolderName;
+      }
+      if (driveUrlEl && folderUrl) {
+        driveUrlEl.textContent = folderUrl;
+      }
+      if (driveLinkEl && folderUrl) {
+        driveLinkEl.href = folderUrl;
+        driveLinkEl.classList.remove('hidden');
+      }
+    }
+
+    async function verifyAutoStorage() {
+      try {
+        const res = await sendToDatabase({ action: 'initAutoStorage' }, 'Memverifikasi folder Drive & Spreadsheet otomatis...');
+        if (res.status === 'success' && res.storageInfo) {
+          appState.storageInfo = { ...appState.storageInfo, ...res.storageInfo };
+          appState.wilayah.folder_gdrive_foto_url = res.storageInfo.driveFolderUrl || '';
+          updateAutoStorageUI();
+          showToast('Lokasi penyimpanan otomatis siap & tersinkronisasi!', 'success');
+        } else {
+          showToast('Gagal memverifikasi folder penyimpanan.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal terhubung ke Google Drive / Apps Script.', 'error');
+      }
+    }
+
     function loadSettingsForm() {
       const w = appState.wilayah;
-      document.getElementById('cfg-gdrive-folder').value = w.folder_gdrive_foto_url || '';
       document.getElementById('cfg-tahun').value = w.tahun_inventarisasi_aktif || '2025';
       document.getElementById('cfg-kades').value = w.nama_kepala_desa || '';
       document.getElementById('cfg-sekdes').value = w.nama_sekretaris_desa || '';
       document.getElementById('cfg-pengurus').value = w.nama_pengurus_aset || '';
+
+      const selfLabel = document.getElementById('self-pwd-username');
+      if (selfLabel && appState.currentUser) {
+        selfLabel.textContent = `${appState.currentUser.nama_lengkap} (@${appState.currentUser.username})`;
+      }
+
+      updateAutoStorageUI();
+      renderUsersTable();
+      lucide.createIcons();
     }
 
     async function saveSettings() {
-      appState.wilayah.folder_gdrive_foto_url = document.getElementById('cfg-gdrive-folder').value.trim();
       appState.wilayah.tahun_inventarisasi_aktif = document.getElementById('cfg-tahun').value.trim() || '2025';
       appState.wilayah.nama_kepala_desa = document.getElementById('cfg-kades').value.trim();
       appState.wilayah.nama_sekretaris_desa = document.getElementById('cfg-sekdes').value.trim();
@@ -3036,7 +3453,12 @@
       appState.wilayah.nama_ketua_tim_inventarisasi = appState.wilayah.nama_pengurus_aset;
 
       try {
-        await sendToDatabase({ action: 'saveWilayah', data: appState.wilayah }, 'Menyimpan identitas wilayah ke database...');
+        const res = await sendToDatabase({ action: 'saveWilayah', data: appState.wilayah }, 'Menyimpan identitas wilayah ke database...');
+        if (res.folderUrl) {
+          appState.wilayah.folder_gdrive_foto_url = res.folderUrl;
+          appState.storageInfo.driveFolderUrl = res.folderUrl;
+          updateAutoStorageUI();
+        }
         updateWilayahUI();
         showToast('Identitas wilayah & pejabat berhasil disimpan ke database.', 'success');
       } catch (e) {
