@@ -120,7 +120,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- HALAMAN LOGIN (AUTENTIKASI SHA-256 DARI TAB 'Pengguna' GOOGLE SHEETS)     -->
+  <!-- HALAMAN LOGIN (AUTENTIKASI DARI TAB 'Pengguna' GOOGLE SHEETS)             -->
   <!-- ========================================================================= -->
   <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-violet-950 via-indigo-950 to-slate-900 relative overflow-hidden">
     <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-violet-600/20 blur-3xl pointer-events-none"></div>
@@ -171,7 +171,7 @@
       </form>
 
       <div class="pt-3 border-t border-slate-100 text-center text-[11px] text-slate-400 space-y-1">
-        <p>Enkripsi Keamanan SHA-256 • Terhubung ke Basis Data Google Sheets</p>
+        <p>Terhubung langsung ke Basis Data Google Sheets Pemerintah Desa Wuliwutik.</p>
         <p class="font-mono text-[10px] text-slate-400">Standar Juknis Inventarisasi Aset Desa Kab. Sikka 2025</p>
       </div>
     </div>
@@ -1151,12 +1151,12 @@
                     <i data-lucide="shield-check" class="w-5 h-5"></i>
                   </div>
                   <div>
-                    <h3 class="text-sm font-bold text-slate-800">Manajemen Akun Pengguna (SHA-256)</h3>
-                    <p class="text-xs text-slate-500">Data login diverifikasi menggunakan hash SHA-256 dari tab <code>Pengguna</code></p>
+                    <h3 class="text-sm font-bold text-slate-800">Manajemen Akun Pengguna</h3>
+                    <p class="text-xs text-slate-500">Data login dibaca langsung dari tab <code>Pengguna</code> pada Google Spreadsheet</p>
                   </div>
                 </div>
                 <p class="text-xs text-slate-600 leading-relaxed">
-                  Untuk menambah petugas baru atau mengganti kata sandi, isi baris pada tab <strong><code>Pengguna</code></strong> di Google Spreadsheet (kolom: <code>id_user, username, password, nama_lengkap, jabatan, role, status</code>), lalu jalankan fungsi <code>hashAllPlainPasswords</code> pada Apps Script.
+                  Untuk menambah petugas baru, mengubah kata sandi, atau menonaktifkan akun, silakan kelola baris pada tab <strong><code>Pengguna</code></strong> di Google Spreadsheet Anda (kolom: <code>id_user, username, password, nama_lengkap, jabatan, role, status</code>).
                 </p>
               </div>
             </div>
@@ -1276,13 +1276,13 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- JAVASCRIPT LOGIC (DIRECT DATABASE CONNECTION & SHA-256 AUTHENTICATION)    -->
+  <!-- JAVASCRIPT LOGIC (DIRECT DATABASE CONNECTION & AUTHENTICATION)            -->
   <!-- ========================================================================= -->
   <script>
     // =========================================================================
     // 1. KONFIGURASI KONEKSI DATABASE LANGSUNG (GANTI URL INI DENGAN WEB APP ANDA)
     // =========================================================================
-    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxF-qoB8PHykt6IOngKmFEYmjfl0Gob1BdQbHfgCQPOSfqd3nUg0BHb95lVNPrpTwNS9g/exec';
+    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT_ANDA/exec';
 
     const DEFAULT_WILAYAH = {
       nama_desa: 'Desa Wuliwutik',
@@ -1451,76 +1451,11 @@
     };
 
     // =========================================================================
-    // 3. SISTEM LOGIN & SESI PENGGUNA (SHA-256 + CORS-SAFE GET REQUEST)
+    // 3. SISTEM LOGIN & SESI PENGGUNA (TERHUBUNG KE TAB 'Pengguna')
     // =========================================================================
-    async function computeSha256Hex(message) {
-      if (window.crypto && window.crypto.subtle) {
-        const msgBuffer = new TextEncoder().encode(message);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      }
-      // Fallback SHA-256 murni JS jika dibuka pada konteks non-HTTPS
-      function rightRotate(value, amount) {
-        return (value >>> amount) | (value << (32 - amount));
-      }
-      const mathPow = Math.pow;
-      const maxWord = mathPow(2, 32);
-      let result = '';
-      const words = [];
-      const asciiBitLength = message.length * 8;
-      const hash = [];
-      const k = [];
-      let primeCounter = 0;
-      const isComposite = {};
-      for (let candidate = 2; primeCounter < 64; candidate++) {
-        if (!isComposite[candidate]) {
-          for (let i = 0; i < 313; i += candidate) isComposite[i] = candidate;
-          hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
-          k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
-        }
-      }
-      message += '\x80';
-      while ((message.length % 64) - 56) message += '\x00';
-      for (let i = 0; i < message.length; i++) {
-        const j = message.charCodeAt(i);
-        words[i >> 2] |= j << (((3 - i) % 4) * 8);
-      }
-      words[words.length] = (asciiBitLength / maxWord) | 0;
-      words[words.length] = asciiBitLength;
-      for (let j = 0; j < words.length;) {
-        const w = words.slice(j, (j += 16));
-        const oldHash = hash.slice(0);
-        for (let i = 0; i < 64; i++) {
-          const w15 = w[i - 15], w2 = w[i - 2];
-          const a = hash[0], e = hash[4];
-          const temp1 = hash[7] + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & hash[5]) ^ (~e & hash[6])) + k[i] +
-            (w[i] = i < 16 ? w[i] : (w[i - 16] + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) | 0);
-          const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
-          hash.unshift((temp1 + temp2) | 0);
-          hash[4] = (hash[4] + temp1) | 0;
-          hash.pop();
-        }
-        for (let i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
-      }
-      for (let i = 0; i < 8; i++) {
-        for (let j = 3; j + 1; j--) {
-          const b = (hash[i] >> (j * 8)) & 255;
-          result += (b < 16 ? '0' : '') + b.toString(16);
-        }
-      }
-      return result;
-    }
-
     function togglePasswordVisibility() {
       const inp = document.getElementById('login-password');
-      const icon = document.getElementById('login-eye-icon');
-      const isHidden = inp.type === 'password';
-      inp.type = isHidden ? 'text' : 'password';
-      if (icon) {
-        icon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
-        lucide.createIcons();
-      }
+      inp.type = inp.type === 'password' ? 'text' : 'password';
     }
 
     async function handleLogin(event) {
@@ -1531,30 +1466,19 @@
       const btn = document.getElementById('btn-login-submit');
 
       errBox.classList.add('hidden');
-
-      if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('https://script.google.com/macros/s/AKfycbxF-qoB8PHykt6IOngKmFEYmjfl0Gob1BdQbHfgCQPOSfqd3nUg0BHb95lVNPrpTwNS9g/exec')) {
-        errBox.textContent = 'URL Web App Google Apps Script (GAS_WEBAPP_URL) belum diisi pada kode index.html.';
-        errBox.classList.remove('hidden');
-        return;
-      }
-
       btn.disabled = true;
-      btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Memverifikasi Akun (SHA-256)...</span>`;
+      btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Memverifikasi Akun...</span>`;
 
       try {
-        // Hash kata sandi menjadi SHA-256 sebelum dikirim ke Google Apps Script
-        const passwordHash = await computeSha256Hex(password);
-
-        // Gunakan GET dengan parameter hash SHA-256 agar bebas hambatan CORS redirect di GitHub Pages
-        const loginUrl = `${GAS_WEBAPP_URL}?action=login&username=${encodeURIComponent(username)}&passwordHash=${encodeURIComponent(passwordHash)}`;
-        const res = await fetch(loginUrl, {
-          method: 'GET',
-          redirect: 'follow'
+        const res = await fetch(GAS_WEBAPP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'login',
+            username: username,
+            password: password
+          })
         });
-
-        if (!res.ok) {
-          throw new Error(`HTTP Error ${res.status}`);
-        }
 
         const result = await res.json();
         if (result.status === 'success' && result.user) {
@@ -1563,12 +1487,12 @@
           await enterAuthenticatedApp();
           showToast(`Selamat datang, ${result.user.nama_lengkap}!`, 'success');
         } else {
-          errBox.textContent = result.message || 'Username atau kata sandi salah, atau akun tidak aktif.';
+          errBox.textContent = result.message || 'Login gagal. Periksa kembali username dan kata sandi.';
           errBox.classList.remove('hidden');
         }
       } catch (err) {
         console.error('Login error:', err);
-        errBox.textContent = 'Gagal terhubung ke server database. Pastikan Web App Google Apps Script di-deploy dengan akses "Siapa saja (Anyone)".';
+        errBox.textContent = 'Gagal terhubung ke server database. Pastikan URL GAS_WEBAPP_URL sudah benar dan dapat diakses.';
         errBox.classList.remove('hidden');
       } finally {
         btn.disabled = false;
@@ -1624,10 +1548,7 @@
       setLoader(true, 'Menarik data inventaris dari Google Sheets...');
 
       try {
-        const res = await fetch(`${GAS_WEBAPP_URL}?action=getAll`, {
-          method: 'GET',
-          redirect: 'follow'
-        });
+        const res = await fetch(`${GAS_WEBAPP_URL}?action=getAll`);
         const json = await res.json();
 
         if (json.status === 'success') {
@@ -1666,7 +1587,6 @@
       try {
         const res = await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
-          redirect: 'follow',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
