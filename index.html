@@ -1282,7 +1282,7 @@
     // =========================================================================
     // 1. KONFIGURASI KONEKSI DATABASE LANGSUNG (GANTI URL INI DENGAN WEB APP ANDA)
     // =========================================================================
-    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT_ANDA/exec';
+    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxF-qoB8PHykt6IOngKmFEYmjfl0Gob1BdQbHfgCQPOSfqd3nUg0BHb95lVNPrpTwNS9g/exec';
 
     const DEFAULT_WILAYAH = {
       nama_desa: 'Desa Wuliwutik',
@@ -1532,7 +1532,7 @@
 
       errBox.classList.add('hidden');
 
-      if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('GANTI_DENGAN_ID_DEPLOYMENT_ANDA')) {
+      if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('AKfycbxF-qoB8PHykt6IOngKmFEYmjfl0Gob1BdQbHfgCQPOSfqd3nUg0BHb95lVNPrpTwNS9g')) {
         errBox.textContent = 'URL Web App Google Apps Script (GAS_WEBAPP_URL) belum diisi pada kode index.html.';
         errBox.classList.remove('hidden');
         return;
