@@ -773,67 +773,6 @@
             </div>
           </form>
         </section>
-    
-    // =========================================================================
-    // 3. SISTEM LOGIN & SESI PENGGUNA (SHA-256 CLIENT-SIDE HASHING)
-    // =========================================================================
-    async function computeSha256Hex(message) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    function togglePasswordVisibility() {
-      const inp = document.getElementById('login-password');
-      inp.type = inp.type === 'password' ? 'text' : 'password';
-    }
-
-    async function handleLogin(event) {
-      event.preventDefault();
-      const username = document.getElementById('login-username').value.trim();
-      const password = document.getElementById('login-password').value.trim();
-      const errBox = document.getElementById('login-error-box');
-      const btn = document.getElementById('btn-login-submit');
-
-      errBox.classList.add('hidden');
-      btn.disabled = true;
-      btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Memverifikasi Akun...</span>`;
-
-      try {
-        // Hash kata sandi dengan SHA-256 sebelum dikirim ke server
-        const passwordHash = await computeSha256Hex(password);
-
-        const res = await fetch(GAS_WEBAPP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({
-            action: 'login',
-            username: username,
-            passwordHash: passwordHash
-          })
-        });
-
-        const result = await res.json();
-        if (result.status === 'success' && result.user) {
-          appState.currentUser = result.user;
-          sessionStorage.setItem(SESSION_USER_KEY, JSON.stringify(result.user));
-          await enterAuthenticatedApp();
-          showToast(`Selamat datang, ${result.user.nama_lengkap}!`, 'success');
-        } else {
-          errBox.textContent = result.message || 'Login gagal. Periksa kembali username dan kata sandi.';
-          errBox.classList.remove('hidden');
-        }
-      } catch (err) {
-        console.error('Login error:', err);
-        errBox.textContent = 'Gagal terhubung ke server database. Pastikan URL GAS_WEBAPP_URL sudah benar dan dapat diakses.';
-        errBox.classList.remove('hidden');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i data-lucide="log-in" class="w-4 h-4"></i><span>Masuk ke Sistem Inventaris</span>`;
-        lucide.createIcons();
-      }
-    }
 
         <!-- ===================================================================== -->
         <!-- HALAMAN 3: DAFTAR & KELOLA INVENTARIS ASET                            -->
@@ -1343,7 +1282,7 @@
     // =========================================================================
     // 1. KONFIGURASI KONEKSI DATABASE LANGSUNG (GANTI URL INI DENGAN WEB APP ANDA)
     // =========================================================================
-    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxF-qoB8PHykt6IOngKmFEYmjfl0Gob1BdQbHfgCQPOSfqd3nUg0BHb95lVNPrpTwNS9g/exec';
+    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT_ANDA/exec';
 
     const DEFAULT_WILAYAH = {
       nama_desa: 'Desa Wuliwutik',
